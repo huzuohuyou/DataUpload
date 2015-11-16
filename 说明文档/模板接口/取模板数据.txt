@@ -1,0 +1,8 @@
+sql语句写法
+select PATIENT_ID,VISIT_ID ,'@主诉' as zs,'@既往史' as jws .....from pat_visit
+
+1.头两列 为PATIENT_ID ,VISIT_ID
+2.元素名@+元素名称
+3.文件服务器添加取元素方法
+4.注意给临时文件夹目录赋值everyone 权限
+5.保证接口所在磁盘空间充足

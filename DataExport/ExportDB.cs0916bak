@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data;
+using ToolFunction;
+using JHEMR.EmrSysDAL;
+
+namespace DataExport
+{
+
+    public class ExportDB:IExport
+    {
+        private static int okcount = 0;
+        private static int falsecount = 0;
+        public static object[] ExportParam = new object[6];
+
+        private static void InsertDataIntoTarget1(object o)
+        {
+            DataSet ds = (DataSet)o;
+            InsertDataIntoTarget(ds);
+            string mess = "\n数据上传完成"
+                        + "\n时间:" + DateTime.Now.AddDays(-1).ToShortDateString() + "至" + DateTime.Now.ToShortDateString();
+                        +"\n导出成功:" + okcount.ToString() + "条"
+                        + "\n导出失败:" + falsecount.ToString() + "条";
+            RemoteMessage.SendMessage(mess);
+            CommonFunction.WriteErrorLog(mess + "\n");
+        }
+
+        public static bool InsertDataIntoTarget(DataSet source)
+        {
+            bool result = true;
+            //修改人:吴海龙;修改时间2014-07-19;修改原因:从pt_tables_dict 设置那些表导出
+            DataSet _ds = DALUse.Query(string.Format("select * from pt_tables_dict where  exportflag = 'TRUE'"));
+            DataTable targettable = _ds.Tables.Count > 0 ? _ds.Tables[0] : null;
+            if (targettable == null)
+            {
+                return false;
+            }
+            string _strConn = DALUse.Query(string.Format("select * from PT_Setting")).Tables[0].Rows[0]["connstr"].ToString();
+            string dbType = FixDateTime.getClientConnectType(_strConn);
+            foreach (DataRow drtarget in targettable.Rows)
+            {
+                //构造插入的列
+                string insertcolumns = "";
+                DataTable dtsource = null;
+                foreach (DataTable dt1 in source.Tables)
+                {
+                    if (dt1.TableName.Contains(drtarget["ID"].ToString()))
+                    {
+                        dtsource = dt1;
+                    }
+                }
+                if (dtsource == null)
+                {
+                    Logger.WriteErrorLogTodataBase(drtarget["table_name"].ToString() + "未导出！");
+                    continue;
+                }
+                //构造插入的行
+                string sqlcolumn = "select * from " + drtarget["TABLE_NAME"].ToString() + " where 1=0 ";
+                RemoteMessage.SendMessage("插入中间表：" + drtarget["TABLE_NAME"].ToString());
+
+                DataSet _dsColumn = DALUseSpecial.Query(sqlcolumn, _strConn);
+                foreach (DataColumn drcolumnname in _dsColumn.Tables[0].Columns)//拼接插入的列
+                {
+                    insertcolumns += drcolumnname.ToString() + ",";
+                }
+                insertcolumns = insertcolumns.Trim(',');
+                insertcolumns = insertcolumns.Remove(0, 4);
+                foreach (DataRow drinsertdata in dtsource.Rows)
+                {
+                    string sql = "";
+                    string insertvalue = "";
+                    foreach (string dcitem in insertcolumns.Split(','))
+                    {
+                        if (dtsource.Columns.Contains(dcitem))
+                        {
+                            string type = _dsColumn.Tables[0].Columns[dcitem].DataType.Name.ToString();
+                            insertvalue += FixDateTime.makeInsertvalue(drinsertdata[dcitem].ToString(), false, "SQLSERVER", type);
+                        }
+                        else
+                        {
+                            insertvalue += "NULL,";
+                        }
+                    }
+                    insertvalue = insertvalue.Trim(',');
+                    insertvalue = CallMrInfo(insertvalue);
+                    sql = string.Format("insert into {0} ({1}) values ({2})",
+                        drtarget["TABLE_NAME"].ToString(),
+                        insertcolumns,
+                        insertvalue);
+                    //sqllist.Add(sql);
+                    ToolFunction.clsProperty.insertcount = ToolFunction.clsProperty.insertcount++;
+                    try//针对插入操作上传日志。
+                    {
+                        if (DALUseSpecial.ExecuteSql(sql, _strConn) == 1)
+                        {
+                            RemoteMessage.SendMessage("成功执行：" + sql);
+                            okcount++;
+                        }
+                        else
+                        {
+                            falsecount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        falsecount++;
+                        result = false;
+                        CommonFunction.WriteErrorLog("时间：" + DateTime.Now.ToString() + "\nSQL：" + sql + "\n方法：InsertDataIntoTarget\n异常：" + ex.Message);
+                        continue;
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 调用模板
+        /// </summary>
+        /// <param name="p_strInsertValue"></param>
+        /// <returns></returns>
+        public static string CallMrInfo(string p_strInsertValue)
+        {
+            string[] _arrValue = p_strInsertValue.Split(',');
+            string[] _arrValueNew = new string[50];
+            for (int i = 0; i <= _arrValue.Length; i++)
+            {
+                if (_arrValue[i].Contains("@"))
+                {
+                    _arrValueNew[i] = EmrInfo.GetEmrInfo("", 1, _arrValue[i].Remove(0, 1));
+                }
+                else
+                {
+                    _arrValueNew[i] = _arrValue[i];
+                }
+            }
+            return _arrValueNew.ToString();
+        }
+
+        /// <summary>
+        /// 取出对比字段
+        /// </summary>
+        /// <param name="pt_id">平台名</param>
+        /// <param name="table_name">表名</param>
+        /// <param name="compare_name">字段名</param>
+        /// <returns></returns>
+        public static string getFieldName(string pt_id, string table_name,string compare_name)
+        {
+            string result = "";
+            DataSet ds = DALUse.Query(string.Format("select * from PT_COMPARISON where pt_id = '{0}' and table_name = '{1}' and compare_name = '{2}'", pt_id, table_name, compare_name));
+            if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                result = ds.Tables[0].Rows[0]["field"].ToString();
+            }
+            return result;
+        }
+
+        #region IExport 成员
+
+        public void Export()
+        {
+            InsertDataIntoTarget1(PublicProperty.ExportParam[0]);
+        }
+
+        #endregion
+
+    }
+}

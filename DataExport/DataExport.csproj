@@ -1,0 +1,279 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A373BBDC-C076-4EF6-A419-E582910B7591}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataExport</RootNamespace>
+    <AssemblyName>DataExport</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <ApplicationIcon>17.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EmrSysAdaper, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="EmrSysCom, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\EmrSysCom.dll</HintPath>
+    </Reference>
+    <Reference Include="EmrSysComUnDAL, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\ImportLib\EmrSysComUnDAL.DLL</HintPath>
+    </Reference>
+    <Reference Include="EmrSysDAL, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\客户端\广州附属二院 客户端\EmrSysDAL.dll</HintPath>
+    </Reference>
+    <Reference Include="EmrSysFsrv, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Tools.Excel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.configuration">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.OracleClient">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Deployment">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Design">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ServiceProcess">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoUpload.cs" />
+    <Compile Include="ConversionData.cs" />
+    <Compile Include="DBTemplet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FluenctExport.cs" />
+    <Compile Include="GrabInfo.cs" />
+    <Compile Include="外部接口\EmrInfo.cs" />
+    <Compile Include="DB\ExportDB.cs" />
+    <Compile Include="EXCEL\ExportExcel.cs" />
+    <Compile Include="XML\AsynXmlExport.cs" />
+    <Compile Include="ExportFile.cs" />
+    <Compile Include="DBF\ExportDBF.cs" />
+    <Compile Include="DB\AsynDbExport.cs" />
+    <Compile Include="InterFace\IFreshData.cs" />
+    <Compile Include="InterFace\IValidate.cs" />
+    <Compile Include="PublicProperty.cs" />
+    <Compile Include="FixDateTime.cs" />
+    <Compile Include="InterFace\IExport.cs" />
+    <Compile Include="uctlShowFixInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlShowFixInfo.Designer.cs">
+      <DependentUpon>uctlShowFixInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DBTemplet.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DBTemplet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlBaseConfig.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>uctlBaseConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlShowFixInfo.resx">
+      <DependentUpon>uctlShowFixInfo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlConfigDict.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>uctlConfigDict.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlDoExport.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>uctlDoExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlPTManage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>uctlPTManage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlXmlManage.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>uctlXmlManage.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SQL.config" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="uctlBaseConfig.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlBaseConfig.Designer.cs">
+      <DependentUpon>uctlBaseConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="uctlConfigDict.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlConfigDict.Designer.cs">
+      <DependentUpon>uctlConfigDict.cs</DependentUpon>
+    </Compile>
+    <Compile Include="uctlDoExport.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlDoExport.Designer.cs">
+      <DependentUpon>uctlDoExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="uctlPTManage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlPTManage.Designer.cs">
+      <DependentUpon>uctlPTManage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="uctlXmlManage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlXmlManage.Designer.cs">
+      <DependentUpon>uctlXmlManage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\UploadMrInfoService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="WebServiceHelper.cs" />
+    <Compile Include="Win32API.cs" />
+    <Compile Include="XML\ExportXml.cs" />
+    <Compile Include="文件接口\EmrFile.cs" />
+    <Compile Include="文件接口\EmrInfoManagement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="17.ico" />
+    <None Include="Web References\UploadMrInfoService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\UploadMrInfoService\Service.disco" />
+    <None Include="Web References\UploadMrInfoService\Service.wsdl" />
+    <Content Include="版本升级说明.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DBMS_WebService\DBMS_WebService.csproj">
+      <Project>{F0E04FBF-F6AE-49D5-AB9A-BCB6446CD87F}</Project>
+      <Name>DBMS_WebService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolFunction\ToolFunction.csproj">
+      <Project>{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}</Project>
+      <Name>ToolFunction</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VFPOLEDBLib">
+      <Guid>{50BAEECA-ED25-11D2-B97B-000000000000}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost/Service.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\UploadMrInfoService\</RelPath>
+      <UpdateFromURL>http://localhost/Service.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>DataExport_UploadMrInfoService_EmrService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Debug\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

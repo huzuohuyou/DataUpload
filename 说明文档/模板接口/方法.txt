@@ -1,0 +1,156 @@
+ #region 2015-09-09 吴海龙 获取 病历模板信息
+
+
+
+    [DllImport(@"E:\EMRAssist.dll", SetLastError = true)]
+    static extern bool GetXmlNodeContent(string strOpenFileName, int nDocumentMode, int nType, string strFindText, short nLayerNo, short nFindType, [Out, MarshalAs(UnmanagedType.LPArray)]char[] strBuff, int nBufSize);//
+
+    public string get_file(string host_addr, string strPatientID, int nVisitID, string local_file, int option)
+    {
+        string filename = local_file;
+        //从mr_work_path取出文件路径,服务器ip,以及用户名和密码
+
+        string ftpServerIP = "", ftpUserID = "", ftpPassword = "", ftpMrPath = "", ftpMrFileName = "";
+        //连接EMR数据库串
+        ConnectionStringSettings sDB = ConfigurationManager.ConnectionStrings["EMRConnectionString"];
+        DbProviderFactory fDB = DbProviderFactories.GetFactory(sDB.ProviderName);
+        using (DbConnection connDB = fDB.CreateConnection())
+        {
+            connDB.ConnectionString = sDB.ConnectionString;
+            try
+            {
+                connDB.Open();
+                DbCommand cmdDB = connDB.CreateCommand();
+                cmdDB.CommandText = "select mr_path,file_user,file_pwd,ip_addr from mr_work_path"; ;
+                DbDataAdapter da = fDB.CreateDataAdapter();
+                da.SelectCommand = cmdDB;
+                DataSet dsInfo = new DataSet();
+                da.Fill(dsInfo);
+                cmdDB.Connection.Close();
+
+                //connDB.Open();
+                //DbDataAdapter daEmr = fDB.CreateDataAdapter();
+                //OleDbCommand cmdEmr = connDB.CreateCommand();
+                //OleDbDataAdapter daEmr = new OleDbDataAdapter();
+
+                //DataSet dsInfo = new DataSet();
+                //cmdEmr.CommandText = "select mr_path,file_user,file_pwd,ip_addr from mr_work_path";
+                //daEmr.SelectCommand = cmdEmr;
+                //daEmr.Fill(dsInfo);
+                if (dsInfo.Tables[0].Rows.Count > 0)
+                {
+                    ftpServerIP = dsInfo.Tables[0].Rows[0]["ip_addr"].ToString();
+                    ftpUserID = dsInfo.Tables[0].Rows[0]["file_user"].ToString();
+                    ftpPassword = dsInfo.Tables[0].Rows[0]["file_pwd"].ToString();
+                    ftpMrPath = dsInfo.Tables[0].Rows[0]["mr_path"].ToString();
+                }
+                else
+                    return "";
+                if (option == 0)
+                {
+                    cmdDB.CommandText = "select file_name from mr_file_index where patient_id='" + strPatientID + "' and visit_id=" + nVisitID.ToString() + " and mr_class='AB' ";
+                }
+                else if (option == 1)
+                {
+                    cmdDB.CommandText = "select file_name from mr_file_index where patient_id='" + strPatientID + "' and visit_id=" + nVisitID.ToString() + " and mr_class='AC' ";
+                }
+                da.SelectCommand = cmdDB;
+                DataSet dsFile = new DataSet();
+                da.Fill(dsFile);
+                if (dsFile.Tables[0].Rows.Count > 0)
+                {
+                    ftpMrFileName = dsFile.Tables[0].Rows[0]["file_name"].ToString();
+                }
+                else
+                    return "";
+            }
+            catch (Exception ex)
+            {
+                ex.ToString();
+                return "";
+            }
+
+        }
+        string strMrPath = "";
+        strMrPath = ftpMrPath + genMrPath(strPatientID) + ftpMrFileName;
+        File.Copy(strMrPath, filename);
+        return strMrPath;
+    }
+
+    private string genMrPath(string strPatientID)
+    {
+        string strPath, strTemp;
+        if (strPatientID.Length < 2)
+        {
+            strPath = strPatientID;
+            strTemp = "";
+        }
+        else
+        {
+            if (strPatientID.Length <= 8)
+            {
+                strPath = strPatientID.Substring(strPatientID.Length - 2, 2); //取末尾两位
+                strTemp = strPatientID.Substring(0, strPatientID.Length - 2);  //取剩余部分
+            }
+            else
+            {
+                strPath = strPatientID.Substring(strPatientID.Length - 4, 4); //取末尾四位
+                strTemp = strPatientID.Substring(0, strPatientID.Length - 4);  //取剩余部分
+            }
+        }
+        if (strPath.Length == 1)
+            strPath = "0" + strPath;
+        strPath = strPath + "\\";
+        string strPrefix = "00000000000000";
+        if (strTemp.Length <= 8)
+            strTemp = strPrefix.Substring(0, 8 - strTemp.Length) + strTemp;
+        else
+            strTemp = strPrefix.Substring(0, 12 - strTemp.Length) + strTemp;
+        strPath = strPath + strTemp + "\\";
+        return strPath;
+
+    }
+//=============================假如原接口有以上方法则只需添加GetMRInfoByEleMentName====================================
+    /// <summary>
+    /// 获取病历模板信息
+    /// 2015-09-09
+    /// 吴海龙
+    /// </summary>
+    /// <param name="strPatientId">病人id</param>
+    /// <param name="nVisitID">住院次</param>
+    /// <param name="p_strElemName">元素名</param>
+    /// <returns></returns>
+    [WebMethod]
+    public string GetMRInfoByEleMentName(string strPatientId, int nVisitID, string p_strElemName)
+    {
+        string strResult = "";
+        string _strEleName = p_strElemName;
+        DataSet dsReturn = new DataSet();
+        try
+        {
+            string _strFilePath = "E:\\tmpyxmr001";//Server.MapPath("tmpyxmr001")
+            File.Delete(_strFilePath);
+            bool bReturn;
+            char[] sReCheckCodeList = new char[2560];            
+            string strFilePath = get_file("", strPatientId, nVisitID,_strFilePath , 0);
+            if (strFilePath != "")
+            {
+                bReturn = GetXmlNodeContent(_strFilePath, 0, 0, _strEleName, 1, 1, sReCheckCodeList, 2560);
+                if (bReturn)
+                {
+                    strResult = new string(sReCheckCodeList);
+                    strResult = strResult.Replace("\0", "");
+                }
+                File.Delete(_strFilePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            strResult = ex.Message;
+            ex.ToString();
+        }
+        return strResult;
+    }
+
+
+    #endregion

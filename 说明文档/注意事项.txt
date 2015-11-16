@@ -1,0 +1,15 @@
+1.调用接口方法sql语句中必须包含patient_id,visit_id 入select patient_id,visit_id ... from pat_visit...
+
+2.字典excel列有 FIELD_NAME,TARGET_VALUE,LOCAL_VALUE
+
+3.未在本地计算机上注册microsoft.ace ：
+读取Excel要生成32位软件，
+服务器端没有装Office2007客户端，
+未安装AccessDatabaseEngine.exe 驱动
+
+4.数据字典只能有一个tab sheet1 不能有sheet2及以后，且不能改名
+
+5.sql中每个字段与中间库每个字段一一对应
+
+5.注意sql脚本的格式为utf-8其他格式会导致中文乱码
+哈哈哈
