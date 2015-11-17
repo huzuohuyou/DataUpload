@@ -81,6 +81,7 @@
             this.btn_done.TabIndex = 8;
             this.btn_done.Text = "块式导出";
             this.btn_done.UseVisualStyleBackColor = true;
+            this.btn_done.Visible = false;
             this.btn_done.Click += new System.EventHandler(this.btn_done_Click);
             // 
             // ofd_dbfpath

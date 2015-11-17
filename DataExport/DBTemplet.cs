@@ -41,6 +41,8 @@ namespace DataExport
         private TextBox textBox4;
         private DataGridViewTextBoxColumn NAME;
         private DataGridViewTextBoxColumn SQL;
+        private TabPage tabPage3;
+        private RichTextBox richTextBox1;
         private Button button1;
 
         public DBTemplet() {
@@ -76,7 +78,9 @@ namespace DataExport
             this.label1 = new System.Windows.Forms.Label();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.button3 = new System.Windows.Forms.Button();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -85,6 +89,7 @@ namespace DataExport
             this.splitContainer1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -140,6 +145,7 @@ namespace DataExport
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -233,12 +239,12 @@ namespace DataExport
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.radioButton2);
             this.tabPage2.Controls.Add(this.radioButton1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 26);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(554, 444);
+            this.tabPage2.Size = new System.Drawing.Size(554, 440);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "MR";
+            this.tabPage2.Text = "FILE";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // dataGridView2
@@ -377,6 +383,16 @@ namespace DataExport
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.Click += new System.EventHandler(this.radioButton1_Click);
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.richTextBox1);
+            this.tabPage3.Location = new System.Drawing.Point(4, 26);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(554, 440);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "TABLE";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(39, 476);
@@ -386,6 +402,14 @@ namespace DataExport
             this.button3.Text = "¹Ø±Õ";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(548, 185);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
             // 
             // DBTemplet
             // 
@@ -410,6 +434,7 @@ namespace DataExport
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -470,7 +495,10 @@ namespace DataExport
                         m_strClass = "FILE";
                     }
                     break;
-                case 3: { }
+                case 2: {
+                    m_strDataDetail =richTextBox1.Text;
+                    m_strClass = "TABLE";
+                }
                     break;
                 case 4: { }
                     break;

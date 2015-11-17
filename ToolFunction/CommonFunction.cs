@@ -1250,6 +1250,7 @@ namespace ToolFunction
                 catch (Exception exp)
                 {
                     WriteError("DB",exp.Message);
+                    return null;
                     //throw;
                 }
             }

@@ -258,11 +258,12 @@
             this.CLASS.HeaderText = "类别";
             this.CLASS.Items.AddRange(new object[] {
             "DB",
-            "FILE"});
+            "FILE",
+            "TABLE"});
             this.CLASS.Name = "CLASS";
             this.CLASS.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.CLASS.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.CLASS.Width = 60;
+            this.CLASS.Width = 80;
             // 
             // CHAPTER_NAME
             // 

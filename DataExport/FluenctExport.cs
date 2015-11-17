@@ -31,12 +31,12 @@ namespace DataExport
         public void ExportOnePatInfo(string p_strObjectName,string p_strPatientId, string p_strVisitId)
         {
             
-            DataTable _dtOnePatInfo = GrabInfo.GrabPatientInfo(p_strObjectName, p_strPatientId, p_strVisitId);
-            _dtOnePatInfo = ConversionData.ExchangeData(_dtOnePatInfo);
-            _dtOnePatInfo.TableName = p_strObjectName;
-            DataSet _dsOnePatInfo = new DataSet();
-            _dsOnePatInfo.Tables.Add(_dtOnePatInfo);
-            GrabInfo.ExeExport(_dsOnePatInfo);
+            DataSet _dsOnePatInfo = GrabInfo.GrabPatientInfo(p_strObjectName, p_strPatientId, p_strVisitId);
+            _dsOnePatInfo = ConversionData.ExchangeData(_dsOnePatInfo);
+            //_dsOnePatInfo.TableName = p_strObjectName;
+            //DataSet _dsOnePatInfo = new DataSet();
+            //_dsOnePatInfo.Tables.Add(_dsOnePatInfo);
+            GrabInfo.ExeExport(_dsOnePatInfo, p_strObjectName, p_strPatientId, p_strVisitId);
         }
 
 
