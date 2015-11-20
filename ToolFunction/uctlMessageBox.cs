@@ -20,7 +20,7 @@ namespace ToolFunction
 
         private void disappeartime_Tick(object sender, EventArgs e)
         {
-                this.FindForm().Opacity = this.FindForm().Opacity - 0.2;//改变窗体透明度
+                this.FindForm().Opacity = this.FindForm().Opacity - 0.5;//改变窗体透明度
                 if (this.FindForm().Opacity == 0)//当窗体透明度为0时(看不到窗体了)
                 {
                     this.FindForm().Close();//关闭窗体

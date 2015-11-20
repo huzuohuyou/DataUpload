@@ -45,9 +45,11 @@ namespace DataExport
         private RichTextBox richTextBox1;
         private Button button1;
 
-        public DBTemplet() {
+        public DBTemplet()
+        {
             InitializeComponent();
         }
+
 
         private void InitializeComponent()
         {
@@ -79,8 +81,8 @@ namespace DataExport
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.button3 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -152,6 +154,7 @@ namespace DataExport
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(562, 470);
             this.tabControl1.TabIndex = 2;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPage1
             // 
@@ -317,6 +320,8 @@ namespace DataExport
             this.textBox1.Size = new System.Drawing.Size(393, 23);
             this.textBox1.TabIndex = 9;
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
+            this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // label4
             // 
@@ -393,6 +398,14 @@ namespace DataExport
             this.tabPage3.Text = "TABLE";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(548, 434);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
+            // 
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(39, 476);
@@ -402,14 +415,6 @@ namespace DataExport
             this.button3.Text = "关闭";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Location = new System.Drawing.Point(3, 3);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(548, 185);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
             // 
             // DBTemplet
             // 
@@ -441,18 +446,57 @@ namespace DataExport
 
         #endregion
 
+        public string m_strTableXml = string.Empty;
+        public string m_strTableSQL = string.Empty;
         public string m_strDataDetail = string.Empty;
         public string m_strClass = string.Empty;
         public bool m_bSave = false;
         public DataTable m_dtSQL = new DataTable();
+        public DataTable m_dtMrSet = new DataTable();
 
+        public DBTemplet(string _strTableXml)
+        {
+            InitializeComponent();
+            m_strTableXml = _strTableXml;
+        }
+
+        public DBTemplet(string p_strTableXml,string p_strTableSQL)
+        {
+            InitializeComponent();
+            m_strTableXml = p_strTableXml;
+            m_strTableSQL = p_strTableSQL;
+           
+        }
+
+
+        public string GetTableColumns()
+        {
+            List<string> _lField = ExportXml.GetFiledFromXml(m_strTableXml);
+            string _strField = "SELECT \nPATIENT_ID,\nVISIT_ID,";
+            foreach (string var in _lField)
+            {
+                _strField += "\n" + var.Replace("[","").Replace("]","").Trim() + ",";
+            }
+            _strField = _strField.Trim(',');
+            _strField += " \nFROM 表名 \nWHERE PATIENT_ID = '@PATIENT_ID' \nAND VISIT_ID = @VISIT_ID";
+            return _strField;
+        }
 
         public void SetSQL()
         {
             DataSet _dsXml = GetSQL();
             m_dtSQL = _dsXml.Tables[0];
             this.dataGridView1.DataSource = m_dtSQL.DefaultView;
-          
+
+        }
+
+        public void SetMrSet()
+        {
+            GetMrDict();
+            dataGridView2.DataSource = m_dtMrSet.DefaultView;
+            //DataSet _dsXml = GetSQL();
+            //m_dtSQL = _dsXml.Tables[0];
+            //this.dataGridView1.DataSource = m_dtSQL.DefaultView;
         }
 
         public DataSet GetSQL()
@@ -461,12 +505,12 @@ namespace DataExport
             return CommonFunction.ConvertXMLFileToDataSet(_strIniPath);
         }
 
-        public void GetMrDict() {
+        public void GetMrDict()
+        {
 
             string _strSQL = "select  distinct(mr_code),topic,mr_class from mr_templet_index";
-            DataTable _dtMrTemplet = CommonFunction.OleExecuteBySQL(_strSQL,"","EMR");
-            dataGridView2.DataSource = _dtMrTemplet.DefaultView;
-
+            DataTable _dtMrTemplet = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            m_dtMrSet = _dtMrTemplet;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -491,14 +535,24 @@ namespace DataExport
                     break;
                 case 1:
                     {
+                        if (textBox2.Text=="")
+                        {
+                            MessageBox.Show("元素名称为空");
+                            return;
+                        }
                         m_strDataDetail = textBox3.Text;
                         m_strClass = "FILE";
                     }
                     break;
-                case 2: {
-                    m_strDataDetail =richTextBox1.Text;
-                    m_strClass = "TABLE";
-                }
+                case 2:
+                    {
+                        m_strDataDetail = richTextBox1.Text;
+                        if (!CheckSQL(m_strDataDetail))
+                        {
+                            return;
+                        }
+                        m_strClass = "TABLE";
+                    }
                     break;
                 case 4: { }
                     break;
@@ -552,14 +606,27 @@ namespace DataExport
                 {
                     _strClass = "元素";
                 }
+                textBox1.Text = dataGridView2.CurrentRow.Cells["topic"].Value.ToString();
+                textBox2.Focus();
                 textBox3.Text = string.Format(@"{0}|{1}|{2}", _strClass, textBox1.Text, textBox2.Text);
+                if (((TextBox)sender).Name == "textBox2")
+                {
+                    WriteBack();
+                }
+            }
+            else
+            {
+                foreach (DataGridViewRow dgvr in dataGridView2.Rows)
+                {
+                    dgvr.Selected = false;
+                }
             }
         }
 
         private void DBTemplet_Load(object sender, EventArgs e)
         {
             SetSQL();
-            GetMrDict();
+            SetMrSet();
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -572,26 +639,27 @@ namespace DataExport
             SynSql();
         }
 
-        public void SynSql() {
+        public void SynSql()
+        {
             progressBar1.Visible = true;
             progressBar1.Value = 0;
             string _strSQL = "select * from pat_visit where 1=0";
-            DataTable _dtPatVisit = CommonFunction.OleExecuteBySQL(_strSQL,"","EMR");
+            DataTable _dtPatVisit = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
             progressBar1.Maximum = _dtPatVisit.Columns.Count;
             foreach (DataColumn _dc in _dtPatVisit.Columns)
             {
                 progressBar1.Value++;
                 string _strName = _dc.Caption;
-                string _strValue = string.Format(@"select {0} from pat_visit where patient_id = '@PATIENT_ID' and visit_id = @VISIT_ID",_dc.Caption);
-                DataRow[] _arrTemp =  ((DataView)dataGridView1.DataSource).Table.Select(string.Format("name = '{0}'", _strName));
-                if (_arrTemp.Length>0)
+                string _strValue = string.Format(@"select {0} from pat_visit where patient_id = '@PATIENT_ID' and visit_id = @VISIT_ID", _dc.Caption);
+                DataRow[] _arrTemp = ((DataView)dataGridView1.DataSource).Table.Select(string.Format("name = '{0}'", _strName));
+                if (_arrTemp.Length > 0)
                 {
-                    foreach (DataRow _drTemp  in _arrTemp)
+                    foreach (DataRow _drTemp in _arrTemp)
                     {
                         ((DataView)dataGridView1.DataSource).Table.Rows.Remove(_drTemp);
                     }
                 }
-                ((DataView)dataGridView1.DataSource).Table.Rows.Add(_strName,_strValue.ToUpper());
+                ((DataView)dataGridView1.DataSource).Table.Rows.Add(_strName, _strValue.ToUpper());
             }
             progressBar1.Value = 0;
             _strSQL = "select * from pat_master_index where 1=0";
@@ -648,7 +716,7 @@ namespace DataExport
 
         private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
         {
-           
+
         }
 
         private void textBox4_KeyDown_1(object sender, KeyEventArgs e)
@@ -664,7 +732,7 @@ namespace DataExport
                     dgvr.Selected = false;
                 }
             }
-            
+
         }
 
         private void textBox4_KeyUp(object sender, KeyEventArgs e)
@@ -677,7 +745,7 @@ namespace DataExport
             {
                 GetFitSql();
             }
-           
+
         }
 
         /// <summary>
@@ -707,20 +775,80 @@ namespace DataExport
 
         public void GetFitSql()
         {
-            DataRow[] _arrFit =this.m_dtSQL.Select(string.Format("name like '{0}%'", textBox4.Text));
+            DataRow[] _arrFit = this.m_dtSQL.Select(string.Format("name like '{0}%'", textBox4.Text));
             DataTable _dtFit = new DataTable();
             _dtFit.Columns.Add("NAME");
             _dtFit.Columns.Add("SQL");
             foreach (DataRow var in _arrFit)
             {
-                _dtFit.Rows.Add(var["NAME"].ToString(),var["SQL"].ToString());
+                _dtFit.Rows.Add(var["NAME"].ToString(), var["SQL"].ToString());
             }
             dataGridView1.DataSource = _dtFit.DefaultView;
+        }
+
+        public void GetFitMrSet()
+        {
+            DataRow[] _arrFit = this.m_dtMrSet.Select(string.Format("topic like '%{0}%'or mr_code like '{0}%'", textBox1.Text));
+            DataTable _dtFit = new DataTable();
+            _dtFit.Columns.Add("mr_class");
+            _dtFit.Columns.Add("mr_code");
+            _dtFit.Columns.Add("topic");
+            foreach (DataRow var in _arrFit)
+            {
+                _dtFit.Rows.Add(var["mr_class"].ToString(), var["mr_code"].ToString(), var["topic"].ToString());
+            }
+            dataGridView2.DataSource = _dtFit.DefaultView;
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             WriteBack();
         }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 2)
+            {
+                if (m_strTableSQL != "")
+                {
+                    richTextBox1.Text = m_strTableSQL;
+                }
+                else
+                {
+                    richTextBox1.Text = GetTableColumns();
+                }
+            }
+        }
+
+        public bool CheckSQL(string p_strSQL)
+        {
+            string _strSQL = p_strSQL.Replace("@PATIENT_ID", "1").Replace("@VISIT_ID", "1");
+            DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            if (_dtTemp==null)
+            {
+                MessageBox.Show("SQL语句有误请检查");
+                return false;
+            }
+            return true;
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                SetMrSet();
+            }
+            else
+            {
+                GetFitMrSet();
+            }
+        }
+
+        public void GetMrTempletName() { }
     }
 }

@@ -141,9 +141,15 @@ namespace DataExport
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            uctlXmlManage de = new uctlXmlManage();
+            uctlXmlStrManage de = new uctlXmlStrManage();
             CommonFunction.AddForm3(pl_showcontains, de);
 
+        }
+
+        private void button2_Click_2(object sender, EventArgs e)
+        {
+            uctlXmlDocManage de = new uctlXmlDocManage();
+            CommonFunction.AddForm3(pl_showcontains,de);
         }
 
       

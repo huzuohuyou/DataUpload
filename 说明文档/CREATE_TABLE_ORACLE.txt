@@ -8,10 +8,10 @@ CREATE TABLE PT_TABLES_DICT(
 
 CREATE TABLE PT_CHAPTER_DICT(	
 	TABLE_NAME varchar2(100) NULL,
-        CHAPTER_NAME varchar2(100) NULL,
+        CHAPTER_NAME varchar2(4000) NULL,
         DATA_DETAIL varchar2(500) NULL,
         CLASS varchar2(10) NULL
-)
+);
 
 alter table PT_CHAPTER_DICT
   add constraint PK_CHAPTER_ID primary key (CHAPTER_NAME, TABLE_NAME)

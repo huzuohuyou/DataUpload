@@ -34,7 +34,8 @@ namespace DataExport.文件接口
         {
             try
             {
-                if (EmrSysPubVar.fillHospitalName() && EmrSysPubVar.fillFileSystemInfo())
+                EmrSysPubVar.fillHospitalName();
+                if ( EmrSysPubVar.fillFileSystemInfo())
                 {
                     //RemoteMessage.SendMessage("连接文件服务器状态初始化.......");
                     EmrSysPubVar.setTempFileFullName(Application.StartupPath + "\\file\\mrtemp");
@@ -80,12 +81,18 @@ namespace DataExport.文件接口
             strArgs[0] = 0;
             strArgs[1] = p_strFileName;
             strArgs[2] = p_strPatientId;
-            if (!EMRArchiveAdaperUse.retrieveEmrFile(strArgs))
+            try
             {
-                //RemoteMessage.SendMessage(_strMess.PadRight(30, '　') + "下载失败");
+                if (!EMRArchiveAdaperUse.retrieveEmrFile(strArgs))
+                {
+                    return false;
+                }
+            }
+            catch (Exception exp)
+            {
+
                 return false;
             }
-            //RemoteMessage.SendMessage(_strMess.PadRight(30, '　') + "下载成功");
             return true;
         }
 
@@ -131,11 +138,15 @@ namespace DataExport.文件接口
         /// <param name="p_strFileName">文件名</param>
         /// <param name="p_strElementName">元素名</param>
         /// <returns></returns>
-        public static string GetACFileInfo(string p_strPatientId, string p_strVisitId, string p_strMrClass, string p_strElementName)
+        public static string GetYSFileInfo(string p_strPatientId, string p_strVisitId, string p_strMrClass, string p_strElementName)
         {
             string _strElementValue = string.Empty;
             //string _strGenMrPath = GetRootMrPath(p_strPatientId, p_strVisitId, p_strMrClass);
             string _strFileName = GetFileName(p_strPatientId, p_strVisitId, p_strMrClass);
+            if ("" == _strFileName)
+            {
+                return "";
+            }
             string _strFilePath = GetLocalFilePath(p_strPatientId, _strFileName);
             //File.Delete(_strFilePath);
             if (!EmrFile.ExistMrFile(p_strPatientId, _strFileName))
@@ -332,9 +343,13 @@ namespace DataExport.文件接口
         /// <param name="p_strFileName"></param>
         /// <param name="p_strElementName"></param>
         /// <returns></returns>
-        public static string GetABFileInfo(string p_strPatientId, string p_strVisitId, string p_strMrClass, string p_strElementName)
+        public static string GetCCFileInfo(string p_strPatientId, string p_strVisitId, string p_strMrClass, string p_strElementName)
         {
             string _strFileName = GetFileName(p_strPatientId, p_strVisitId, p_strMrClass);
+            if ("" == _strFileName)
+            {
+                return "";
+            }
             string _strLocalPath = GetLocalFilePath(p_strPatientId, _strFileName);
             RedirectSavePath(p_strPatientId, p_strVisitId, _strFileName);
             if (!EmrFile.ExistMrFile(p_strPatientId, _strFileName))

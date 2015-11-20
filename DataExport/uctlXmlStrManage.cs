@@ -10,9 +10,9 @@ using System.IO;
 
 namespace DataExport
 {
-    public partial class uctlXmlManage : UserControl
+    public partial class uctlXmlStrManage : UserControl
     {
-        public uctlXmlManage()
+        public uctlXmlStrManage()
         {
             InitializeComponent();
             InitData();

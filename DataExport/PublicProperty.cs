@@ -8,7 +8,7 @@ namespace DataExport
 {
     public class PublicProperty
     {
-
+        public static string m_strEmrConnection = "EMR";
         /// <summary>
         /// 分组病人数据集
         /// </summary>

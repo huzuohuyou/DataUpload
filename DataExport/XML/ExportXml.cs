@@ -27,7 +27,7 @@ namespace DataExport
             DataTable _dtTemp = new DataTable();
             _dtTemp.Columns.Add("CLASS");
             _dtTemp.Columns.Add("CHAPTER_NAME");
-            List<string> _listField = GetFieldFromXml(p_strObjectName);
+            List<string> _listField = GetFieldFromXmlObject(p_strObjectName);
             foreach (string var in _listField)
             {
                 _dtTemp.Rows.Add("FILE", var);
@@ -82,7 +82,7 @@ namespace DataExport
                     string _strMultiXml = GetFixXml(_dtSoucr.TableName);
                     foreach (DataColumn _dcSource in _dtSoucr.Columns)
                     {
-                        string _strOldValue = _dcSource.Caption;
+                        string _strOldValue = _dcSource.Caption ;
                         string _strNewValue = _drSource[_dcSource].ToString();
                         if (_strMultiXml.IndexOf(_strOldValue) > 0)
                         {
@@ -341,7 +341,24 @@ namespace DataExport
             return false;
         }
 
-      
+        /// <summary>
+        /// 从xmlstring中获取字段
+        /// </summary>
+        /// <param name="p_strXml"></param>
+        /// <returns></returns>
+        public static List<string> GetFiledFromXml(string p_strXml)
+        {
+            List<string> _listField = new List<string>();
+            Regex reg = new Regex(@"\[[^\[^\]]*\]");
+            string _strXml = p_strXml;
+            int _nCount = reg.Matches(_strXml).Count;
+            for (int i = 0; i < _nCount; i++)
+            {
+                string _strField = reg.Matches(_strXml)[i].Captures[0].Value;
+                _listField.Add(_strField);
+            }
+            return _listField;
+        }
 
         /// <summary>
         /// 通过正则表达式获取xml中标注的字段
@@ -349,7 +366,7 @@ namespace DataExport
         /// </summary>
         /// <param name="p_strObject">对象名称</param>
         /// <returns>字段集合</returns>
-        public static List<string> GetFieldFromXml(string p_strObject)
+        public static List<string> GetFieldFromXmlObject(string p_strObject)
         {
             List<string> _listField = new List<string>();
             Regex reg = new Regex(@"\[[^\[^\]]*\]");
@@ -385,7 +402,7 @@ namespace DataExport
         {
             ShowFixInfo.m_dtSource.Rows.Clear();
             string _strSQLValue = ExportDB.GetSQL(p_strTableName);
-            List<string> _listField = GetFieldFromXml(p_strTableName);
+            List<string> _listField = GetFieldFromXmlObject(p_strTableName);
             string _strSQL = _strSQLValue.ToUpper().Trim().Replace("@PATIENT_ID", "1").Replace("@VISIT_ID", "1");
             DataTable _dtLocal = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
             if (_dtLocal == null)

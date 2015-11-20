@@ -163,7 +163,11 @@ namespace DataExport
         {
             string _strSQL = p_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
             DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            if (_dtTemp.Rows.Count == 1)
+            if (_dtTemp == null)
+            {
+                return "";
+            }
+            else if (_dtTemp.Rows.Count == 1)
             {
                 return _dtTemp.Rows[0][0].ToString();
             }
@@ -193,11 +197,11 @@ namespace DataExport
                 _strElementName = _arrParam[2];
                 if ("²ã´ÎºÅ" == _strFileType)
                 {
-                    _strResult = EmrInfoManagement.GetABFileInfo(p_strPatientId, p_strVisitId, _strFileName, _strElementName);
+                    _strResult = EmrInfoManagement.GetCCFileInfo(p_strPatientId, p_strVisitId, _strFileName, _strElementName);
                 }
                 else if ("ÔªËØ" == _strFileType)
                 {
-                    _strResult = EmrInfoManagement.GetACFileInfo(p_strPatientId, p_strVisitId, _strFileName, _strElementName);
+                    _strResult = EmrInfoManagement.GetYSFileInfo(p_strPatientId, p_strVisitId, _strFileName, _strElementName);
                 }
                 else
                 {
