@@ -311,6 +311,23 @@ namespace DataExport.文件接口
             return strContent;
         }
 
+
+        ///// <summary>
+        ///// 获取病历文件打散的xml
+        ///// </summary>
+        ///// <param name="strMrFile"></param>
+        ///// <returns></returns>
+        //public static string GetXmlContent(string strMrFile)
+        //{
+        //    string strRootPath = strCopyPath + ".xml";
+        //    string strContent = "";
+        //    if (SaveFileToFieldElem(strMrFile, strRootPath, 1))
+        //    {
+        //        strContent = System.IO.File.ReadAllText(strRootPath, Encoding.Default);
+        //    }
+        //    return strContent;
+        //}
+
         #endregion
 
         #region 取模板层次号元素
@@ -323,7 +340,9 @@ namespace DataExport.文件接口
         /// <returns></returns>
         public static string GetCC(string p_strLocalPath, string p_strElementName)
         {
-            string _strFile = GetXmlNodeStr(p_strLocalPath, p_strElementName);
+            string strPath = Application.StartupPath + "\\file\\" + p_strLocalPath;
+            GetXmlContent(strPath);
+            string _strFile = GetXmlNodeStr(strPath, p_strElementName);
             if (_strFile.Length > 512)
             {
                 return _strFile.Substring(0, 512).Replace("{", "").Replace("}", "");
@@ -356,7 +375,7 @@ namespace DataExport.文件接口
             {
                 DownLoadFile(_strFileName, p_strPatientId);
             }
-            return GetCC(_strFileName, p_strPatientId);
+            return GetCC(p_strPatientId + "_" + _strFileName, p_strElementName);
         }
 
         #endregion
@@ -366,12 +385,15 @@ namespace DataExport.文件接口
         /// </summary>
         /// <param name="strPath"></param>
         /// <returns></returns>
-        public static string GetXmlNodeStr(string strPath, string ElemName)
+        public static string GetXmlNodeStr(string p_strPath, string ElemName)
         {
+            string strPath = p_strPath;
+            //string strPath = Application.StartupPath + "\\file\\" + p_strPath;
             try
             {
                 bool bReturn;
                 char[] sReCheckCodeList = new char[2560];
+                
                 bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 1, 1, sReCheckCodeList, 2560);
                 if (!bReturn)
                 {
@@ -393,12 +415,64 @@ namespace DataExport.文件接口
                 string s = new string(str2);
                 return s;
             }
-            catch (Exception)
+            catch (Exception exp)
             {
                 return "";
                 CommonFunction.WriteError("取层次号错误" + strPath + "|" + ElemName);
             }
 
         }
+
+        ///// <summary>
+        ///// 获取病历文件打散的xml
+        ///// </summary>
+        ///// <param name="strMrFile"></param>
+        ///// <returns></returns>
+        //public static string GetXmlContent(string strMrFile)
+        //{
+        //    string strRootPath = strCopyPath + ".xml";
+        //    string strContent = "";
+        //    if (SaveFileToFieldElem(strMrFile, strRootPath, 1))
+        //    {
+        //        strContent = System.IO.File.ReadAllText(strRootPath, Encoding.Default);
+        //    }
+        //    return strContent;
+        //}
+
+
+        /// <summary>
+        /// 层次号取主诉
+        /// </summary>
+        /// <param name="strPath"></param>
+        /// <returns></returns>
+        //public static string GetXmlNodeStr(string strPath, string ElemName)
+        //{
+        //    //string strRootPath = Application.StartupPath + "\\content";
+        //    bool bReturn;
+        //    char[] sReCheckCodeList = new char[2560];
+
+        //    bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 1, 1, sReCheckCodeList, 2560);
+        //    if (!bReturn)
+        //    {
+        //        bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 2, 1, sReCheckCodeList, 2560);
+        //    }
+        //    ArrayList al = new ArrayList();
+        //    for (int i = 0; i < sReCheckCodeList.Length; i++)
+        //    {
+        //        if (sReCheckCodeList[i].ToString().Trim() != "\0")
+        //            al.Add(sReCheckCodeList[i]);
+        //        else
+        //            break;
+        //    }
+
+        //    char[] str2 = new char[al.Count];
+        //    for (int i = 0; i < str2.Length; i++)
+        //    {
+        //        str2[i] = (char)al[i];
+        //    }
+        //    string s = new string(str2);
+        //    return s;
+        //}
+
     }
 }
