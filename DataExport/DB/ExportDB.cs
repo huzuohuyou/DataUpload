@@ -161,8 +161,13 @@ namespace DataExport
             _dtTemp.Columns.Add("CLASS");
             _dtTemp.Columns.Add("CHAPTER_NAME");
             //_dtTemp.Columns.Add("DATA_DETAIL");
-            string _strSQL = string.Format(@"selct * from '{0}' where 1=0",p_strOjbectName);
+            string _strSQL = string.Format(@"selct * from {0} where 1=0",p_strOjbectName);
             DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
+            if (_dtObject == null)
+            {
+                MessageBox.Show("数据库中不存在表" + p_strOjbectName);
+                return null;
+            }
             foreach (DataColumn var in _dtObject.Columns)
             {
                 _dtTemp.Rows.Add("FILE", var.Caption.ToUpper());

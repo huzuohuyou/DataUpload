@@ -368,30 +368,37 @@ namespace DataExport.文件接口
         /// <returns></returns>
         public static string GetXmlNodeStr(string strPath, string ElemName)
         {
-            bool bReturn;
-            char[] sReCheckCodeList = new char[2560];
+            try
+            {
+                bool bReturn;
+                char[] sReCheckCodeList = new char[2560];
+                bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 1, 1, sReCheckCodeList, 2560);
+                if (!bReturn)
+                {
+                    bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 2, 1, sReCheckCodeList, 2560);
+                }
+                ArrayList al = new ArrayList();
+                for (int i = 0; i < sReCheckCodeList.Length; i++)
+                {
+                    if (sReCheckCodeList[i].ToString().Trim() != "\0")
+                        al.Add(sReCheckCodeList[i]);
+                    else
+                        break;
+                }
+                char[] str2 = new char[al.Count];
+                for (int i = 0; i < str2.Length; i++)
+                {
+                    str2[i] = (char)al[i];
+                }
+                string s = new string(str2);
+                return s;
+            }
+            catch (Exception)
+            {
+                return "";
+                CommonFunction.WriteError("取层次号错误" + strPath + "|" + ElemName);
+            }
 
-            bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 1, 1, sReCheckCodeList, 2560);
-            if (!bReturn)
-            {
-                bReturn = GetXmlNodeContent(strPath, 0, 0, ElemName, 2, 1, sReCheckCodeList, 2560);
-            }
-            ArrayList al = new ArrayList();
-            for (int i = 0; i < sReCheckCodeList.Length; i++)
-            {
-                if (sReCheckCodeList[i].ToString().Trim() != "\0")
-                    al.Add(sReCheckCodeList[i]);
-                else
-                    break;
-            }
-
-            char[] str2 = new char[al.Count];
-            for (int i = 0; i < str2.Length; i++)
-            {
-                str2[i] = (char)al[i];
-            }
-            string s = new string(str2);
-            return s;
         }
     }
 }

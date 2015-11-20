@@ -19,11 +19,21 @@ namespace DataExport
         private const string m_strDBF = "DBF";
         private const string m_strXML = "XML";
         private const string m_strEXCEL = "EXCEL";
+        private MainForm mf = null;
+
         public uctlBaseConfig()
         {
             InitializeComponent();
             InitData();
         }
+
+        public uctlBaseConfig(MainForm p_form)
+        {
+            InitializeComponent();
+            InitData();
+            mf = p_form;
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
             ConfigurationManager.AppSettings.GetValues("123");
@@ -199,6 +209,7 @@ namespace DataExport
             config.Save(ConfigurationSaveMode.Modified);
             //刷新，否则程序读取的还是之前的值（可能已装入内存）
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+            mf.SetBaseInfo();
         }
 
         private void button8_Click(object sender, EventArgs e)

@@ -210,11 +210,11 @@ namespace DataExport
             DataGridViewRow _drObject = dataGridView1.CurrentRow;
             string _strExportType = uctlBaseConfig.GetConfig("ExportType");
             string _strObjectName = _drObject.Cells["TABLE_NAME"].Value.ToString();
-            string _strSQL = string.Format(@"delete pt_chapter_dict where table_name = '{0}'", _strObjectName);
+            string _strSQL = string.Empty;// string.Format(@"delete pt_chapter_dict where table_name = '{0}'", _strObjectName);
             DataTable _dtObject = null;
-            if (DialogResult.OK == MessageBox.Show("确定同步,这将覆盖原有[章节]数据！", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
+            if (DialogResult.OK == MessageBox.Show("确定同步[章节]数据？", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
             {
-                CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
+                //CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
                 switch (_strExportType)
                 {
                     case "DB":
@@ -240,13 +240,42 @@ namespace DataExport
         /// 2015-11-06
         /// 吴海龙
         /// </summary>
-        public void SycnChapterData(string p_strObjectName,DataTable p_dtObject)
+        public void SycnChapterData(string p_strObjectName, DataTable p_dtObject)
         {
+            if (null == p_dtObject)
+            {
+                return;
+            }
             foreach (DataRow var in p_dtObject.Rows)
             {
-                string _strSQL = string.Format(@"insert into pt_chapter_dict(table_name,chapter_name,class) values('{0}','{1}','{2}')", p_strObjectName, var["CHAPTER_NAME"].ToString(), var["CLASS"].ToString());
-                CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
+                if (!ExistChapter(p_strObjectName, var["CHAPTER_NAME"].ToString()))
+                {
+                    string _strSQL = string.Format(@"insert into pt_chapter_dict(table_name,chapter_name,class) values('{0}','{1}','{2}')", p_strObjectName, var["CHAPTER_NAME"].ToString(), var["CLASS"].ToString());
+                    CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
+                }
             }
+        }
+
+        /// <summary>
+        /// 判断是否存在章节
+        /// </summary>
+        /// <param name="p_strObjectName"></param>
+        /// <param name="p_strChapterName"></param>
+        /// <returns></returns>
+        public bool ExistChapter(string p_strObjectName, string p_strChapterName)
+        {
+            string _strSQL = string.Format(@"select count(*) mycount from pt_chapter_dict where table_name = '{0}' and chapter_name = '{1}'", p_strObjectName, p_strChapterName);
+            DataTable _dtCount = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            if (_dtCount != null)
+            {
+                int _nCount = int.Parse(_dtCount.Rows[0]["mycount"].ToString());
+                if (_nCount > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
 
         private void dataGridView2_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)

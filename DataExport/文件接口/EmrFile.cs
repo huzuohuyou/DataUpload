@@ -94,13 +94,13 @@ namespace DataExport.文件接口
             string _strTemp = p_strPatientId + "_" + p_strFileName;
             if (!EMRArchiveAdaperUse.retrieveEmrFile(strArgs))
             {
-                _nTCount++;
-                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "SUCCESS");
+                _nFCount++;
+                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "FALSE");
             }
             else
             {
-                _nFCount++;
-                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "FALSE");
+                _nTCount++;
+                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "SUCCESS");
             }
             _strTemp = "导出完毕:[成功]" + _nTCount + "[失败]:" + _nFCount;
             RemoteMessage.SendMessage(_strTemp);
@@ -123,11 +123,11 @@ namespace DataExport.文件接口
             string _strTemp = m_strPatientId + "_" + m_strFileName;
             if (!EMRArchiveAdaperUse.retrieveEmrFile(strArgs))
             {
-                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "SUCCESS");
+                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "FALSE");
             }
             else
             {
-                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "FALSE");
+                RemoteMessage.SendMessage(_strTemp.PadRight(30, '　') + "SUCCESS");
             }
             //if (m_nCount>=m_dtPats.Rows.Count)
             //{

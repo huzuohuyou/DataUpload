@@ -23,6 +23,7 @@ namespace DataExport
         {
            
             InitializeComponent();
+            SetBaseInfo();
             //try
             //{
             //    string s1 = ConfigurationManager.AppSettings["ClientConnectType"].ToString();
@@ -109,7 +110,7 @@ namespace DataExport
 
         private void button4_Click(object sender, EventArgs e)
         {
-            uctlBaseConfig bc = new uctlBaseConfig();
+            uctlBaseConfig bc = new uctlBaseConfig(this);
             CommonFunction.AddForm3(pl_showcontains, bc);
         }
 
@@ -131,6 +132,15 @@ namespace DataExport
                 m_proRemoteMessage.Dispose();
             }
             
+        }
+
+        /// <summary>
+        /// 设置窗体基本信息
+        /// </summary>
+        public void SetBaseInfo()
+        {
+            label1.Text = "导出方式:" + uctlBaseConfig.GetConfig("ExportType");
+            this.Text = "数据到粗V3.0  导出方式:" + uctlBaseConfig.GetConfig("ExportType");
         }
 
         private void button5_Click(object sender, EventArgs e)
