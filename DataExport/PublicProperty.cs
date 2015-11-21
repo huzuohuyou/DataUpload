@@ -8,6 +8,8 @@ namespace DataExport
 {
     public class PublicProperty
     {
+        public static string m_strCurrentPatientId = string.Empty;
+        public static string m_strCurrentVisitId = string.Empty;
         public static string m_strEmrConnection = "EMR";
         /// <summary>
         /// 分组病人数据集

@@ -30,7 +30,7 @@ namespace DataExport
        
         public void ExportOnePatInfo(string p_strObjectName,string p_strPatientId, string p_strVisitId)
         {
-            
+            GrabInfo.InitPatDBInfo(p_strPatientId, p_strVisitId);
             DataSet _dsOnePatInfo = GrabInfo.GrabPatientInfo(p_strObjectName, p_strPatientId, p_strVisitId);
             _dsOnePatInfo = ConversionData.ExchangeData(_dsOnePatInfo);
             //_dsOnePatInfo.TableName = p_strObjectName;
@@ -71,6 +71,7 @@ namespace DataExport
                 {
                     string _strPatinetId = var["PATIENT_ID"].ToString();
                     string _strVisitId = var["VISIT_ID"].ToString();
+                   
                     ExportOnePatInfo(_strObjectName, _strPatinetId, _strVisitId);
                 }
             }

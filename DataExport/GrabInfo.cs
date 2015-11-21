@@ -22,6 +22,7 @@ namespace DataExport
         public string m_strTableName = string.Empty;
         public string m_strChapterName = string.Empty;
         public string m_strDataDatail = string.Empty;
+        public static DataSet m_dsPatDBInfo = new DataSet();
 
         #region IExport 成员
 
@@ -44,6 +45,58 @@ namespace DataExport
             DataTable _dtSimpleChapterDetail = GetSimpleChapterDetail(p_strObjectName);
             _dsMultyChapterDetail.Tables.Add(_dtSimpleChapterDetail.Copy());
             return _dsMultyChapterDetail;
+        }
+
+        /// <summary>
+        /// 初始化上传数据库信息
+        /// </summary>
+        /// <param name="p_strPatientId"></param>
+        /// <param name="p_strVisitId"></param>
+        public static void InitPatDBInfo(string p_strPatientId, string p_strVisitId)
+        {
+            m_dsPatDBInfo.Tables.Clear();
+            DataSet _dsObj = DBTemplet.GetSQL();
+            foreach (DataRow var in _dsObj.Tables[0].Rows)
+            {
+                string _strName = var["NAME"].ToString().ToUpper();
+                string _strSQL = var["SQL"].ToString().ToUpper();
+                _strSQL = string.Format(_strSQL.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId));
+                DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, _strName, PublicProperty.m_strEmrConnection);
+                m_dsPatDBInfo.Tables.Add(_dtTemp.Copy());
+            }
+        }
+
+        /// <summary>
+        /// 获取dataset中过滤的表
+        /// 没有返回null
+        /// 2015-11-21今天是周日
+        /// </summary>
+        /// <param name="p_strTableName"></param>
+        /// <returns></returns>
+        public static DataTable GetPatTable(string p_strTableName)
+        {
+            if (m_dsPatDBInfo.Tables.Contains(p_strTableName))
+            {
+                return m_dsPatDBInfo.Tables[p_strTableName];
+            }
+            RemoteMessage.SendMessage("数据集中无所描述表" + p_strTableName);
+            return null;
+        }
+
+        /// <summary>
+        /// 获取表中字段值
+        /// </summary>
+        /// <param name="p_dtTable"></param>
+        /// <param name="p_strName"></param>
+        /// <returns></returns>
+        public static string GetPatItemInfo(DataTable p_dtTable, string p_strName)
+        {
+            if (p_dtTable != null && p_dtTable.Rows.Count == 1)
+            {
+                return p_dtTable.Rows[0][p_strName].ToString();
+            }
+            RemoteMessage.SendMessage("表为空或行不为1");
+            return "";
         }
 
         /// <summary>
@@ -153,6 +206,26 @@ namespace DataExport
             return string.Empty;
         }
 
+        public static string GetTableName(string p_strDataDetail)
+        {
+            string[] _arrParam = p_strDataDetail.Split('|');
+            if (_arrParam.Length==2)
+            {
+                return _arrParam[0];
+            }
+            return "";
+        }
+
+        public static string GetFieldName(string p_strDataDetail)
+        {
+            string[] _arrParam = p_strDataDetail.Split('|');
+            if (_arrParam.Length == 2)
+            {
+                return _arrParam[1];
+            }
+            return "";
+        }
+
         /// <summary>
         /// 从数据库获取数据
         /// 查询的数据为一行一些的数据
@@ -161,17 +234,25 @@ namespace DataExport
         /// <returns></returns>
         public static string GrabPatientInfoFromDB(string p_strChapterDetail, string p_strPatientId, string p_strVisitId)
         {
-            string _strSQL = p_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
-            DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            if (_dtTemp == null)
-            {
-                return "";
-            }
-            else if (_dtTemp.Rows.Count == 1)
-            {
-                return _dtTemp.Rows[0][0].ToString();
-            }
-            return string.Empty;
+            string _strTableName = GetTableName(p_strChapterDetail);
+            string _strFieldName = GetFieldName(p_strChapterDetail);
+            DataTable _dtDB = GetPatTable(_strTableName);
+            string _strValue = GetPatItemInfo(_dtDB, _strFieldName);
+            return _strValue;
+           // string _strSQL = string.Empty;
+           // string[] _arrDataDetail = p_strChapterDetail.Split('|');
+           // _strSQL="SELECT "
+           //_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
+           // DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+           // if (_dtTemp == null)
+           // {
+           //     return "";
+           // }
+           // else if (_dtTemp.Rows.Count == 1)
+           // {
+           //     return _dtTemp.Rows[0][0].ToString();
+           // }
+           // return string.Empty;
         }
 
         /// <summary>

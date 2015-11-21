@@ -43,6 +43,7 @@ namespace DataExport
         private DataGridViewTextBoxColumn SQL;
         private TabPage tabPage3;
         private RichTextBox richTextBox1;
+        private Button button7;
         private Button button1;
 
         public DBTemplet()
@@ -64,6 +65,7 @@ namespace DataExport
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
@@ -106,7 +108,7 @@ namespace DataExport
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(432, 6);
+            this.button2.Location = new System.Drawing.Point(468, 6);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 24);
             this.button2.TabIndex = 0;
@@ -116,6 +118,8 @@ namespace DataExport
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.NAME,
@@ -189,6 +193,7 @@ namespace DataExport
             this.splitContainer1.Panel1.Controls.Add(this.textBox4);
             this.splitContainer1.Panel1.Controls.Add(this.button6);
             this.splitContainer1.Panel1.Controls.Add(this.button2);
+            this.splitContainer1.Panel1.Controls.Add(this.button7);
             this.splitContainer1.Panel1.Controls.Add(this.button5);
             // 
             // splitContainer1.Panel2
@@ -211,17 +216,28 @@ namespace DataExport
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(278, 6);
+            this.button6.Location = new System.Drawing.Point(229, 6);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(75, 24);
             this.button6.TabIndex = 0;
             this.button6.Text = "同步";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(310, 6);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 24);
+            this.button7.TabIndex = 0;
+            this.button7.Text = "添加";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(355, 6);
+            this.button5.Location = new System.Drawing.Point(391, 6);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 24);
             this.button5.TabIndex = 0;
@@ -242,10 +258,10 @@ namespace DataExport
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.radioButton2);
             this.tabPage2.Controls.Add(this.radioButton1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 26);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(554, 440);
+            this.tabPage2.Size = new System.Drawing.Size(554, 444);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "FILE";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -391,9 +407,9 @@ namespace DataExport
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.richTextBox1);
-            this.tabPage3.Location = new System.Drawing.Point(4, 26);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(554, 440);
+            this.tabPage3.Size = new System.Drawing.Size(554, 444);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "TABLE";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -446,32 +462,39 @@ namespace DataExport
 
         #endregion
 
-        public string m_strTableXml = string.Empty;
-        public string m_strTableSQL = string.Empty;
+        public string m_strChapter = string.Empty;
         public string m_strDataDetail = string.Empty;
+        //public string m_strDataDetail = string.Empty;
         public string m_strClass = string.Empty;
         public bool m_bSave = false;
         public DataTable m_dtSQL = new DataTable();
         public DataTable m_dtMrSet = new DataTable();
+        DataTable _dtSQL = new DataTable();
 
-        public DBTemplet(string _strTableXml)
+        public DBTemplet(string p_strChapter)
         {
             InitializeComponent();
-            m_strTableXml = _strTableXml;
+            m_strChapter = p_strChapter;
+            InitData();
         }
-
-        public DBTemplet(string p_strTableXml,string p_strTableSQL)
+        
+        public DBTemplet(string p_strChapter,string p_strDataLDetail)
         {
             InitializeComponent();
-            m_strTableXml = p_strTableXml;
-            m_strTableSQL = p_strTableSQL;
-           
+            m_strChapter = p_strChapter;
+            m_strDataDetail = p_strDataLDetail;
+            InitData();
         }
 
+        public void InitData()
+        {
+            m_dtSQL.Columns.Add("NAME");
+            m_dtSQL.Columns.Add("SQL");
+        }
 
         public string GetTableColumns()
         {
-            List<string> _lField = ExportXml.GetFiledFromXml(m_strTableXml);
+            List<string> _lField = ExportXml.GetFiledFromXml(m_strChapter);
             string _strField = "SELECT \nPATIENT_ID,\nVISIT_ID,";
             foreach (string var in _lField)
             {
@@ -499,7 +522,7 @@ namespace DataExport
             //this.dataGridView1.DataSource = m_dtSQL.DefaultView;
         }
 
-        public DataSet GetSQL()
+        public static DataSet GetSQL()
         {
             string _strIniPath = Application.StartupPath + "\\sqltemplet.xml";
             return CommonFunction.ConvertXMLFileToDataSet(_strIniPath);
@@ -515,11 +538,32 @@ namespace DataExport
 
         private void button1_Click(object sender, EventArgs e)
         {
+            //_dtSQL.Rows.Clear();
             string _strIniPath = Application.StartupPath + "\\sqltemplet.xml";
-            DataTable _dtSql = ((DataView)dataGridView1.DataSource).Table;
-            //DataSet _dssql = new DataSet();
-            //_dssql.Tables.Add(_dtSql);
-            CommonFunction.ConvertDataSetToXMLFile(_dtSql.DataSet, _strIniPath);
+            //foreach (DataGridViewRow var in dataGridView1.Rows)
+            //{
+            //    m_dtSQL.Rows.Add(var.Cells["NAME"].Value.ToString(), var.Cells["SQL"].Value.ToString());
+            //}
+            DataSet _ds = new DataSet();
+            _ds.Tables.Add(m_dtSQL.Copy());
+            CommonFunction.ConvertDataSetToXMLFile(_ds, _strIniPath);
+        }
+
+        /// <summary>
+        /// 判断表中是否有此字段
+        /// </summary>
+        /// <param name="p_strTableName"></param>
+        /// <param name="p_strFieldName"></param>
+        /// <returns></returns>
+        public bool IsTableField(string p_strTableName, string p_strFieldName)
+        {
+            string _strSQL = string.Format(@"select {0} from {1} where 1=0", p_strFieldName, p_strTableName);
+            DataTable _dt = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            if (_dt == null)
+            {
+                return false;
+            }
+            return true;
         }
 
         public void WriteBack()
@@ -529,7 +573,14 @@ namespace DataExport
             {
                 case 0:
                     {
-                        m_strDataDetail = dataGridView1.CurrentRow.Cells["sql"].Value.ToString();
+                        string _strTableName = dataGridView1.CurrentRow.Cells["name"].Value.ToString();
+                        string _strFieldName = m_strChapter.Replace("[", "").Replace("]", "");
+                        if (!IsTableField(_strTableName, _strFieldName))
+                        {
+                            MessageBox.Show("表" + _strTableName + "不存在字段" + _strFieldName);
+                            return;
+                        }
+                        m_strDataDetail = _strTableName + "|" + _strFieldName;
                         m_strClass = "DB";
                     }
                     break;
@@ -631,7 +682,9 @@ namespace DataExport
 
         private void button5_Click(object sender, EventArgs e)
         {
-            dataGridView1.Rows.Remove(dataGridView1.CurrentRow);
+            m_dtSQL.Rows.RemoveAt(dataGridView1.CurrentRow.Index);
+            dataGridView1.DataSource = m_dtSQL.DefaultView;
+            //dataGridView1.Rows.Remove(dataGridView1.CurrentRow);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -802,16 +855,16 @@ namespace DataExport
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            WriteBack();
+            //WriteBack();
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabControl1.SelectedIndex == 2)
             {
-                if (m_strTableSQL != "")
+                if (m_strDataDetail != "")
                 {
-                    richTextBox1.Text = m_strTableSQL;
+                    richTextBox1.Text = m_strDataDetail;
                 }
                 else
                 {
@@ -850,5 +903,12 @@ namespace DataExport
         }
 
         public void GetMrTempletName() { }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //dataGridView1.Rows.Add();
+            m_dtSQL.Rows.Add("", "");
+            dataGridView1.DataSource = m_dtSQL.DefaultView;
+        }
     }
 }

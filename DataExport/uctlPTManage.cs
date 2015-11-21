@@ -288,8 +288,8 @@ namespace DataExport
             if (dataGridView2.CurrentCell.ColumnIndex == 4)
             {
                 string _strTableChapter = dataGridView2.CurrentRow.Cells["CHAPTER_NAME"].Value.ToString();
-                string _strTableSQL = dataGridView2.CurrentRow.Cells["DATA_DETAIL"].Value.ToString();
-                DBTemplet dt = new DBTemplet(_strTableChapter, _strTableSQL);
+                string _strDataDetail = dataGridView2.CurrentRow.Cells["DATA_DETAIL"].Value.ToString();
+                DBTemplet dt = new DBTemplet(_strTableChapter, _strDataDetail);
                 dt.ShowDialog();
                 if (dt.m_bSave)
                 {

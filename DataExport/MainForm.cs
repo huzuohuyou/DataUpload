@@ -140,7 +140,7 @@ namespace DataExport
         public void SetBaseInfo()
         {
             label1.Text = "导出方式:" + uctlBaseConfig.GetConfig("ExportType");
-            this.Text = "数据到粗V3.0  导出方式:" + uctlBaseConfig.GetConfig("ExportType");
+            this.Text = "数据导出V3.0  导出方式:" + uctlBaseConfig.GetConfig("ExportType");
         }
 
         private void button5_Click(object sender, EventArgs e)
