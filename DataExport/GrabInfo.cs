@@ -56,12 +56,13 @@ namespace DataExport
         {
             m_dsPatDBInfo.Tables.Clear();
             DataSet _dsObj = DBTemplet.GetSQL();
-            foreach (DataRow var in _dsObj.Tables[0].Rows)
+            DataRow[] _arrSQL = _dsObj.Tables[0].Select("name like '#%'");
+            foreach (DataRow var in _arrSQL)
             {
-                string _strName = var["NAME"].ToString().ToUpper();
+                string _strName = var["NAME"].ToString().ToUpper().Replace("#","");
                 string _strSQL = var["SQL"].ToString().ToUpper();
                 _strSQL = string.Format(_strSQL.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId));
-                DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, _strName, PublicProperty.m_strEmrConnection);
+                DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, _strName, PublicVar.m_strEmrConnection);
                 m_dsPatDBInfo.Tables.Add(_dtTemp.Copy());
             }
         }
@@ -227,12 +228,35 @@ namespace DataExport
         }
 
         /// <summary>
-        /// 从数据库获取数据
+        /// 通过sql从数据库抓取数据
+        /// sql以@符号开始否则无法识别
+        /// </summary>
+        /// <param name="p_strChapterDetail"></param>
+        /// <param name="p_strPatientId"></param>
+        /// <param name="p_strVisitId"></param>
+        /// <returns></returns>
+        public static string GrabPatientInfoFromDBBySQL(string p_strChapterDetail, string p_strPatientId, string p_strVisitId)
+        {
+           string _strSQL= p_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
+            DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            if (_dtTemp == null)
+            {
+                return "";
+            }
+            else if (_dtTemp.Rows.Count == 1)
+            {
+                return _dtTemp.Rows[0][0].ToString();
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// 通过固定参数从数据库获取数据
         /// 查询的数据为一行一些的数据
         /// 假如语句查询出来的为多行则返回空
         /// </summary>
         /// <returns></returns>
-        public static string GrabPatientInfoFromDB(string p_strChapterDetail, string p_strPatientId, string p_strVisitId)
+        public static string GrabPatientInfoFromDBByParam(string p_strChapterDetail, string p_strPatientId, string p_strVisitId)
         {
             string _strTableName = GetTableName(p_strChapterDetail);
             string _strFieldName = GetFieldName(p_strChapterDetail);
@@ -242,17 +266,7 @@ namespace DataExport
            // string _strSQL = string.Empty;
            // string[] _arrDataDetail = p_strChapterDetail.Split('|');
            // _strSQL="SELECT "
-           //_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
-           // DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-           // if (_dtTemp == null)
-           // {
-           //     return "";
-           // }
-           // else if (_dtTemp.Rows.Count == 1)
-           // {
-           //     return _dtTemp.Rows[0][0].ToString();
-           // }
-           // return string.Empty;
+        
         }
 
         /// <summary>
@@ -387,7 +401,16 @@ namespace DataExport
                     string _strTempValue = string.Empty;
                     if ("DB" == _strClass)
                     {
-                        _strTempValue = GrabPatientInfoFromDB(_strDataDatail, _strPatientId, _strVisitId);
+                        if (_strDataDatail.StartsWith("@"))
+                        {
+                            _strTempValue = GrabPatientInfoFromDBBySQL(_strDataDatail, _strPatientId, _strVisitId);
+
+                        }
+                        else
+                        {
+                            _strTempValue = GrabPatientInfoFromDBByParam(_strDataDatail, _strPatientId, _strVisitId);
+
+                        }
                     }
                     else if ("FILE" == _strClass)
                     {
@@ -410,14 +433,14 @@ namespace DataExport
 
         public static void GrabPatientInfo()
         {
-            PublicProperty.ExportData.Tables.Clear();
+            PublicVar.ExportData.Tables.Clear();
             DataTable _dtObjecDict = GetEnabledObject();
             foreach (DataRow _drObject in _dtObjecDict.Rows)
             {
                 string _strObject = _drObject["TABLE_NAME"].ToString();
                 //DataTable _dtObjecDetail = GetChapterDetail(_strObject);
                 DataSet _dsObjectReflect = GetObjectLayOut(_strObject);
-                foreach (DataRow _drPatient in PublicProperty.m_dsPatients.Rows)
+                foreach (DataRow _drPatient in PublicVar.m_dsPatients.Rows)
                 {
                     string _strPatientId = _drPatient["PATIENT_ID"].ToString();
                     string _strVisitId = _drPatient["VISIT_ID"].ToString();
@@ -426,12 +449,12 @@ namespace DataExport
                         if (_dtObjectReflect.TableName.Contains("TABLE"))
                         {
                             DataTable _dtMultiPatientInfo = GrabMultiPatientInfo(_dtObjectReflect, _strPatientId, _strVisitId, _strObject);
-                            PublicProperty.ExportData.Tables.Add(_dtMultiPatientInfo.Copy());
+                            PublicVar.ExportData.Tables.Add(_dtMultiPatientInfo.Copy());
                         }
                         else
                         {
                             DataTable _dtSimplePatientInfo = GrabSimplePatientInfo(_dtObjectReflect, _strPatientId, _strVisitId, _strObject);
-                            PublicProperty.ExportData.Tables.Add(_dtSimplePatientInfo.Copy());
+                            PublicVar.ExportData.Tables.Add(_dtSimplePatientInfo.Copy());
                         }
                     }
                 }
@@ -538,12 +561,12 @@ namespace DataExport
         /// <returns>病人信息</returns>
         public static void GetPatientData()
         {
-            PublicProperty.ExportData.Tables.Clear();
-            DataTable _dtSql = PublicProperty.m_dtSQL;
+            PublicVar.ExportData.Tables.Clear();
+            DataTable _dtSql = PublicVar.m_dtSQL;
             foreach (DataRow dr in _dtSql.Rows)
             {
                 DataTable _dtTemp = new DataTable();
-                foreach (DataRow drpat in PublicProperty.m_dsPatients.Rows)
+                foreach (DataRow drpat in PublicVar.m_dsPatients.Rows)
                 {
                     string _strSQL = string.Format(dr["sql"].ToString().Replace("@PATIENT_ID", drpat["PATIENT_ID"].ToString()).Replace("@VISIT_ID", drpat["VISIT_ID"].ToString()));
                     //_dtTemp.Merge(DALUse.Query(_strSQL).Tables[0]);
@@ -552,7 +575,7 @@ namespace DataExport
                 }
                 DataTable _dt = _dtTemp.Copy();
                 _dt.TableName = dr["TABLE_NAME"].ToString();
-                PublicProperty.ExportData.Tables.Add(_dt);
+                PublicVar.ExportData.Tables.Add(_dt);
             }
             //数据转换2015-09-09 吴海龙
             ConversionData.ExchangeData();
@@ -614,23 +637,23 @@ namespace DataExport
             {
                 case "DB":
                     ie = new ExportDB();
-                    PublicProperty.ExportParam[0] = PublicProperty.ExportData;
+                    PublicVar.ExportParam[0] = PublicVar.ExportData;
                     break;
                 case "DBF":
                     ie = new ExportDBF();
                     string _strDbfPath =  uctlBaseConfig.GetConfig("DbfPath");
-                    PublicProperty.ExportParam[0] = _strDbfPath;
-                    PublicProperty.ExportParam[1] = PublicProperty.ExportData.Tables[0];
+                    PublicVar.ExportParam[0] = _strDbfPath;
+                    PublicVar.ExportParam[1] = PublicVar.ExportData.Tables[0];
                     break;
                 case "EXCLE":
                     ie = new ExportExcel();
                     string _strExceltPath =  uctlBaseConfig.GetConfig("ExceltPath");
-                    PublicProperty.ExcelPath = _strExceltPath;
-                    PublicProperty.ExcelSource = PublicProperty.ExportData.Tables[0];
+                    PublicVar.ExcelPath = _strExceltPath;
+                    PublicVar.ExcelSource = PublicVar.ExportData.Tables[0];
                     break;
                 case "XML":
                     ie = new ExportXml();
-                    PublicProperty.ExportParam[0] = PublicProperty.ExportData;
+                    PublicVar.ExportParam[0] = PublicVar.ExportData;
                     break;
                 default:
                     CommonFunction.WriteError("未知导出类型:" + _strExportType);
@@ -652,23 +675,23 @@ namespace DataExport
             {
                 case "DB":
                     ie = new ExportDB();
-                    PublicProperty.ExportParam[0] = p_dsOnePatInfo;
+                    PublicVar.ExportParam[0] = p_dsOnePatInfo;
                     break;
                 case "DBF":
                     ie = new ExportDBF();
                     string _strDbfPath = uctlBaseConfig.GetConfig("DbfPath");
-                    PublicProperty.ExportParam[0] = _strDbfPath;
-                    PublicProperty.ExportParam[1] = p_dsOnePatInfo;
+                    PublicVar.ExportParam[0] = _strDbfPath;
+                    PublicVar.ExportParam[1] = p_dsOnePatInfo;
                     break;
                 case "EXCLE":
                     ie = new ExportExcel();
                     string _strExceltPath = uctlBaseConfig.GetConfig("ExceltPath");
-                    PublicProperty.ExcelPath = _strExceltPath;
+                    PublicVar.ExcelPath = _strExceltPath;
                     //PublicProperty.ExcelSource = p_dtOnePatInfo;
                     break;
                 case "XML":
                     ie = new ExportXml(p_dsOnePatInfo, p_strObjectName, p_strPatientId, p_strVisitId);
-                    PublicProperty.ExportParam[0] = p_dsOnePatInfo;
+                    PublicVar.ExportParam[0] = p_dsOnePatInfo;
                     break;
                 default:
                     CommonFunction.WriteError("未知导出类型:" + _strExportType);

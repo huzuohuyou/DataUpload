@@ -265,7 +265,7 @@ namespace DataExport
         public bool ExistChapter(string p_strObjectName, string p_strChapterName)
         {
             string _strSQL = string.Format(@"select count(*) mycount from pt_chapter_dict where table_name = '{0}' and chapter_name = '{1}'", p_strObjectName, p_strChapterName);
-            DataTable _dtCount = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            DataTable _dtCount = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicVar.m_strEmrConnection);
             if (_dtCount != null)
             {
                 int _nCount = int.Parse(_dtCount.Rows[0]["mycount"].ToString());

@@ -34,7 +34,7 @@ namespace DataExport
         {
             string _strSQL = string.Format("select FIELD_NAME,LOCAL_VALUE,TARGET_VALUE FROM pt_comparison ");
             DataTable _dtDict = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            foreach (DataTable _dtTemp in PublicProperty.ExportData.Tables)
+            foreach (DataTable _dtTemp in PublicVar.ExportData.Tables)
             {
                 foreach (DataColumn _dcColumn in _dtTemp.Columns)
                 {
@@ -101,21 +101,21 @@ namespace DataExport
         /// <returns>×Öµä¼¯ÐÅÏ¢</returns>
         public static void GetPtCompareDictDetail()
         {
-            PublicProperty.CompareDict.Tables.Clear();
-            DataSet _dsType = GetPtCompareDict(PublicProperty.Pt_Id);
+            PublicVar.CompareDict.Tables.Clear();
+            DataSet _dsType = GetPtCompareDict(PublicVar.Pt_Id);
             try
             {
                 foreach (DataRow _dr in _dsType.Tables[0].Rows)
                 {
                     DataTable _dt = new DataTable(_dr["type_name"].ToString());
-                    string strSQL = string.Format("select * from pt_comparison_detail_dict t where pt_id ='{0}'  and type_name = '{1}'", PublicProperty.Pt_Id, _dr["type_name"].ToString());
+                    string strSQL = string.Format("select * from pt_comparison_detail_dict t where pt_id ='{0}'  and type_name = '{1}'", PublicVar.Pt_Id, _dr["type_name"].ToString());
                     DataSet _ds = DALUse.Query(strSQL);
                     if (_ds.Tables.Count > 0)
                     {
                         _dt = _ds.Tables[0].Copy();
                         _dt.TableName = _dr["type_name"].ToString();
                     }
-                    PublicProperty.CompareDict.Tables.Add(_dt);
+                    PublicVar.CompareDict.Tables.Add(_dt);
                 }
             }
             catch (Exception exp1)

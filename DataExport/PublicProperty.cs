@@ -6,7 +6,7 @@ using System.Data;
 
 namespace DataExport
 {
-    public class PublicProperty
+    public class PublicVar
     {
         public static string m_strCurrentPatientId = string.Empty;
         public static string m_strCurrentVisitId = string.Empty;

@@ -98,6 +98,12 @@
     </Compile>
     <Compile Include="FluenctExport.cs" />
     <Compile Include="GrabInfo.cs" />
+    <Compile Include="uctlRestoreManage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlRestoreManage.Designer.cs">
+      <DependentUpon>uctlRestoreManage.cs</DependentUpon>
+    </Compile>
     <Compile Include="uctlXmlDocManage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -144,6 +150,10 @@
     <EmbeddedResource Include="uctlBaseConfig.resx">
       <SubType>Designer</SubType>
       <DependentUpon>uctlBaseConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlRestoreManage.resx">
+      <DependentUpon>uctlRestoreManage.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="uctlShowFixInfo.resx">
       <DependentUpon>uctlShowFixInfo.cs</DependentUpon>

@@ -217,6 +217,7 @@ namespace DataExport
             else
             {
                 RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "FALSE");
+                uctlRestoreManage.LogFalsePatient(m_strPatientId, m_strVisitId);
             }
         }
 

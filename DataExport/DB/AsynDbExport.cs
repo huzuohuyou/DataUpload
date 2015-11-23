@@ -147,8 +147,10 @@ namespace DataExport
 
             if (CommonFunction.OleExecuteNonQuery(m_strSQL, "TARGET") == 1)
             {
+               
                 return true;
             }
+             
             CommonFunction.WriteError("÷¥––“Ï≥£[SQL]:" + m_strSQL);
             return false;
         }

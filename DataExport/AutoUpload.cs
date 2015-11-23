@@ -89,18 +89,18 @@ namespace DataExport
             IExport ie = null;
             switch (_strOutPutType)
             {
-                case PublicProperty.CExportDB:
+                case PublicVar.CExportDB:
                     ie = new ExportDB();
-                    PublicProperty.ExportParam[0] = m_dsAllPatsInfo;                    
+                    PublicVar.ExportParam[0] = m_dsAllPatsInfo;                    
                     break;
-                case PublicProperty.CExportDBF:
+                case PublicVar.CExportDBF:
                     ie = new ExportDBF();
-                    PublicProperty.ExportParam[0] = _strDbfPath;
-                    PublicProperty.ExportParam[1] = m_dsAllPatsInfo;
+                    PublicVar.ExportParam[0] = _strDbfPath;
+                    PublicVar.ExportParam[1] = m_dsAllPatsInfo;
                     break;
-                case PublicProperty.CExportExcel:
+                case PublicVar.CExportExcel:
                     ie = new ExportExcel();
-                    PublicProperty.ExcelPath = _strExceltPath;
+                    PublicVar.ExcelPath = _strExceltPath;
                     //PublicProperty.ExcelSource = m_dsAllPatsInfo;
                     break;
                 default:

@@ -50,8 +50,8 @@ namespace DataExport
             }
 
             ExportDB.m_strTimeRange = "[时间]:" + dt_sta.Text + "至" + dt_end.Text;
-            PublicProperty.m_dsPatients = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            dataGridView1.DataSource = PublicProperty.m_dsPatients;
+            PublicVar.m_dsPatients = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            dataGridView1.DataSource = PublicVar.m_dsPatients;
             RemoteMessage.SendMessage("==========================[启动文件下载线程]==========================");
             EmrFile ef = new EmrFile(dt_sta.Text, dt_end.Text);
             Thread t = new Thread(ef.PreDownLoadFile);
@@ -78,8 +78,8 @@ namespace DataExport
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FluenctExport fe = new FluenctExport( PublicProperty.m_dsPatients);
-            Thread t = new Thread(fe.ExportPatsInfo);
+            FluenctExport fe = new FluenctExport( PublicVar.m_dsPatients);
+            Thread t = new Thread(fe.ExportPatsInfoForAllObj);
             t.Start();
             //fe.ExportPatsInfo(PublicProperty.m_dsPatients);
         }

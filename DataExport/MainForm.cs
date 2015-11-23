@@ -162,10 +162,6 @@ namespace DataExport
             CommonFunction.AddForm3(pl_showcontains,de);
         }
 
-      
-
-       
-       
 
     }
 }

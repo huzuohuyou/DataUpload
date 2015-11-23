@@ -222,7 +222,6 @@ namespace DataExport
             this.button6.TabIndex = 0;
             this.button6.Text = "同步";
             this.button6.UseVisualStyleBackColor = true;
-            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button7
@@ -558,7 +557,7 @@ namespace DataExport
         public bool IsTableField(string p_strTableName, string p_strFieldName)
         {
             string _strSQL = string.Format(@"select {0} from {1} where 1=0", p_strFieldName, p_strTableName);
-            DataTable _dt = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            DataTable _dt = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicVar.m_strEmrConnection);
             if (_dt == null)
             {
                 return false;
@@ -573,14 +572,15 @@ namespace DataExport
             {
                 case 0:
                     {
-                        string _strTableName = dataGridView1.CurrentRow.Cells["name"].Value.ToString();
-                        string _strFieldName = m_strChapter.Replace("[", "").Replace("]", "");
-                        if (!IsTableField(_strTableName, _strFieldName))
-                        {
-                            MessageBox.Show("表" + _strTableName + "不存在字段" + _strFieldName);
-                            return;
-                        }
-                        m_strDataDetail = _strTableName + "|" + _strFieldName;
+                        //string _strTableName = dataGridView1.CurrentRow.Cells["name"].Value.ToString();
+                        //string _strFieldName = m_strChapter.Replace("[", "").Replace("]", "");
+                        //if (!IsTableField(_strTableName, _strFieldName))
+                        //{
+                        //    MessageBox.Show("表" + _strTableName + "不存在字段" + _strFieldName);
+                        //    return;
+                        //}
+                        //m_strDataDetail = _strTableName + "|" + _strFieldName;
+                        m_strDataDetail = dataGridView1.CurrentRow.Cells["sql"].Value.ToString();
                         m_strClass = "DB";
                     }
                     break;
@@ -689,10 +689,13 @@ namespace DataExport
 
         private void button6_Click(object sender, EventArgs e)
         {
-            SynSql();
+            SynValueDict();
         }
 
-        public void SynSql()
+        /// <summary>
+        /// 同步值字典
+        /// </summary>
+        public void SynValueDict()
         {
             progressBar1.Visible = true;
             progressBar1.Value = 0;
@@ -703,17 +706,18 @@ namespace DataExport
             {
                 progressBar1.Value++;
                 string _strName = _dc.Caption;
-                string _strValue = string.Format(@"select {0} from pat_visit where patient_id = '@PATIENT_ID' and visit_id = @VISIT_ID", _dc.Caption);
-                DataRow[] _arrTemp = ((DataView)dataGridView1.DataSource).Table.Select(string.Format("name = '{0}'", _strName));
+                string _strValue = string.Format(@"{0}|{1}", "PAT_VISIT",_dc.Caption);
+                DataRow[] _arrTemp = m_dtSQL.Select(string.Format("name = '{0}'", _strName));
                 if (_arrTemp.Length > 0)
                 {
                     foreach (DataRow _drTemp in _arrTemp)
                     {
-                        ((DataView)dataGridView1.DataSource).Table.Rows.Remove(_drTemp);
+                        m_dtSQL.Rows.Remove(_drTemp);
                     }
                 }
-                ((DataView)dataGridView1.DataSource).Table.Rows.Add(_strName, _strValue.ToUpper());
+                m_dtSQL.Rows.Add(_strName, _strValue.ToUpper());
             }
+            m_dtSQL.Rows.Add("#PAT_VISIT", "SELECT * FROM PAT_VISIT WHERE PATIENT_ID = '@PATIENT_ID' AND VISIT_ID = @VISIT_ID");
             progressBar1.Value = 0;
             _strSQL = "select * from pat_master_index where 1=0";
             DataTable _dtMasterIndex = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
@@ -722,19 +726,21 @@ namespace DataExport
             {
                 progressBar1.Value++;
                 string _strName = _dc.Caption;
-                string _strValue = string.Format(@"select {0} from pat_master_index where patient_id = '@PATIENT_ID'", _dc.Caption);
-                DataRow[] _arrTemp = ((DataView)dataGridView1.DataSource).Table.Select(string.Format("name = '{0}'", _strName));
+                string _strValue = string.Format(@"{0}|{1}","PAT_MASTER_INDEX", _dc.Caption);
+                DataRow[] _arrTemp = m_dtSQL.Select(string.Format("name = '{0}'", _strName));
                 if (_arrTemp.Length > 0)
                 {
                     foreach (DataRow _drTemp in _arrTemp)
                     {
-                        ((DataView)dataGridView1.DataSource).Table.Rows.Remove(_drTemp);
+                        m_dtSQL.Rows.Remove(_drTemp);
                     }
                 }
-                ((DataView)dataGridView1.DataSource).Table.Rows.Add(_strName, _strValue.ToUpper());
+                m_dtSQL.Rows.Add(_strName, _strValue.ToUpper());
             }
-            m_dtSQL = ((DataView)dataGridView1.DataSource).Table;
+            m_dtSQL.Rows.Add("#PAT_MASTER_INDEX", "SELECT * FROM PAT_MASTER_INDEX WHERE PATIENT_ID = '@PATIENT_ID'");
+            //m_dtSQL = ((DataView)dataGridView1.DataSource).Table;
             //((DataView)dataGridView1.DataSource).Table.DefaultView.Sort = "NAME";
+            dataGridView1.DataSource = m_dtSQL.DefaultView;
             progressBar1.Visible = false;
             //uctlMessageBox.frmDisappearShow("同步完成!");
         }
@@ -876,7 +882,7 @@ namespace DataExport
         public bool CheckSQL(string p_strSQL)
         {
             string _strSQL = p_strSQL.Replace("@PATIENT_ID", "1").Replace("@VISIT_ID", "1");
-            DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicProperty.m_strEmrConnection);
+            DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicVar.m_strEmrConnection);
             if (_dtTemp==null)
             {
                 MessageBox.Show("SQL语句有误请检查");

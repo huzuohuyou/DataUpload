@@ -15,7 +15,7 @@ namespace DataExport
         public void Export()
         {
             //AddExcel(PublicProperty.ExcelPath, PublicProperty.ExcelSource);
-            DataSetToExcel(PublicProperty.ExcelSource,PublicProperty.ExcelPath);
+            DataSetToExcel(PublicVar.ExcelSource,PublicVar.ExcelPath);
             //InsertIntoExcel(PublicProperty.ExcelPath, PublicProperty.ExcelSource);
            
         }

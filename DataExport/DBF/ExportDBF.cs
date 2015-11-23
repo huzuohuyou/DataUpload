@@ -619,8 +619,8 @@ namespace DataExport
         public void Export()
         {
             CommonFunction cf = new CommonFunction();
-            string dbfpath = PublicProperty.ExportParam[0].ToString();
-            DataTable dt = (DataTable)PublicProperty.ExportParam[1];
+            string dbfpath = PublicVar.ExportParam[0].ToString();
+            DataTable dt = (DataTable)PublicVar.ExportParam[1];
             InsertDBF(dt, dbfpath);
         }
 

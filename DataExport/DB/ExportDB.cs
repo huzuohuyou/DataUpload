@@ -147,7 +147,7 @@ namespace DataExport
 
         public void Export()
         {
-            InsertDataIntoTarget(PublicProperty.ExportParam[0]);
+            InsertDataIntoTarget(PublicVar.ExportParam[0]);
         }
 
         /// <summary>
