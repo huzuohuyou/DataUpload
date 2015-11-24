@@ -77,9 +77,6 @@ namespace DataExport
             GrabInfo.InitPatDBInfo(p_strPatientId, p_strVisitId);
             DataSet _dsOnePatInfo = GrabInfo.GrabPatientInfo(p_strObjectName, p_strPatientId, p_strVisitId);
             _dsOnePatInfo = ConversionData.ExchangeData(_dsOnePatInfo);
-            //_dsOnePatInfo.TableName = p_strObjectName;
-            //DataSet _dsOnePatInfo = new DataSet();
-            //_dsOnePatInfo.Tables.Add(_dsOnePatInfo);
             GrabInfo.ExeExport(_dsOnePatInfo, p_strObjectName, p_strPatientId, p_strVisitId);
         }
 
@@ -118,7 +115,8 @@ namespace DataExport
                 {
                     string _strPatinetId = var["PATIENT_ID"].ToString();
                     string _strVisitId = var["VISIT_ID"].ToString();
-                   
+                    PublicVar.m_strCurrentPatientId = _strPatinetId;
+                    PublicVar.m_strCurrentVisitId = _strVisitId;
                     ExportOnePatInfoForOneObj(_strObjectName, _strPatinetId, _strVisitId);
                 }
             }

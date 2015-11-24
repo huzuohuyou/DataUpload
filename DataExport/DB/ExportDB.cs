@@ -24,7 +24,15 @@ namespace DataExport
         public static string m_strMess = string.Empty;
         public AsynDbExport m_MyParam = null;
         public static DataSet m_dsSource = new DataSet();
+        public static string m_strObjectName = string.Empty;
 
+        public ExportDB() { }
+
+        public ExportDB(string p_strObjectName, DataSet p_dsSource)
+        {
+            m_dsSource = p_dsSource;
+            m_strObjectName = p_strObjectName;
+        }
 
         private static void InsertDataIntoTarget(object o)
         {
@@ -41,13 +49,14 @@ namespace DataExport
                 //修改人:吴海龙;修改时间2014-07-19;修改原因:从pt_tables_dict 设置那些表导出
                 m_strSQL = string.Format("select * from pt_tables_dict where  exportflag = 'TRUE'");
                 DataTable _dtTarget = CommonFunction.OleExecuteBySQL(m_strSQL, "", "EMR");
-                foreach (DataRow drTarget in _dtTarget.Rows)
-                {
-                    RemoteMessage.SendMessage("开启" + drTarget["TABLE_NAME"].ToString() + "数据上传线程");
-                    AsynDbExport p = new AsynDbExport(drTarget["TABLE_NAME"].ToString(), p_dsSource);
-                    Thread t = new Thread(new ThreadStart(p.DoProcess));
-                    t.Start();
-                }
+                //foreach (DataRow drTarget in _dtTarget.Rows)
+                //{
+                //RemoteMessage.SendMessage("开启" + drTarget["TABLE_NAME"].ToString() + "数据上传线程");
+                AsynDbExport p = new AsynDbExport(m_strObjectName, p_dsSource);
+                p.DoProcess();
+                //Thread t = new Thread(new ThreadStart(p.DoProcess));
+                //t.Start();
+                //}
             }
             catch (Exception exp)
             {
@@ -147,7 +156,8 @@ namespace DataExport
 
         public void Export()
         {
-            InsertDataIntoTarget(PublicVar.ExportParam[0]);
+            //InsertDataIntoTarget(PublicVar.ExportParam[0]);
+            Insert(m_dsSource);
         }
 
         /// <summary>
@@ -161,7 +171,7 @@ namespace DataExport
             _dtTemp.Columns.Add("CLASS");
             _dtTemp.Columns.Add("CHAPTER_NAME");
             //_dtTemp.Columns.Add("DATA_DETAIL");
-            string _strSQL = string.Format(@"selct * from {0} where 1=0",p_strOjbectName);
+            string _strSQL = string.Format(@"select * from {0} where 1=0",p_strOjbectName);
             DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
             if (_dtObject == null)
             {

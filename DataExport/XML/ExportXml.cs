@@ -14,6 +14,25 @@ namespace DataExport
     class ExportXml : IExport,IValidate
     {
 
+   
+
+        public string m_strObjectName = string.Empty;
+        public string m_strPatientId = string.Empty;
+        public string m_strVisitId = string.Empty;
+        public DataSet m_dsPatInfo = new DataSet();
+
+        public ExportXml() { }
+
+        public ExportXml(DataSet p_dsPatInfo, string p_strObjectName, string p_strPatientId, string p_strVisitId)
+        {
+            m_strObjectName = p_strObjectName;
+            m_strPatientId = p_strPatientId;
+            m_strVisitId = p_strVisitId;
+            m_dsPatInfo = p_dsPatInfo;
+        }
+
+        
+
         #region IExport ≥…‘±
 
         public void Export()
@@ -36,21 +55,6 @@ namespace DataExport
         }
 
         #endregion
-
-        public string m_strObjectName = string.Empty;
-        public string m_strPatientId = string.Empty;
-        public string m_strVisitId = string.Empty;
-        public DataSet m_dsPatInfo = new DataSet();
-
-        public ExportXml(DataSet p_dsPatInfo, string p_strObjectName, string p_strPatientId, string p_strVisitId)
-        {
-            m_strObjectName = p_strObjectName;
-            m_strPatientId = p_strPatientId;
-            m_strVisitId = p_strVisitId;
-            m_dsPatInfo = p_dsPatInfo;
-        }
-
-        public ExportXml() { }
 
         public void ReplaceValue(object o)
         {
@@ -213,11 +217,12 @@ namespace DataExport
             if (SaveXML(_strXml, _strFiledName, "XmlOutPutPath"))
             {
                 RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "OK");
+                uctlRestoreManage.RemoveRecord(m_strObjectName,m_strPatientId, m_strVisitId );
             }
             else
             {
                 RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "FALSE");
-                uctlRestoreManage.LogFalsePatient(m_strPatientId, m_strVisitId);
+                uctlRestoreManage.LogFalsePatient(m_strObjectName,m_strPatientId, m_strVisitId );
             }
         }
 

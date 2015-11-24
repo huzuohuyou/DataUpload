@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DataExport.Properties {
+namespace MessagePlatform.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DataExport.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DataExport.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MessagePlatform.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,13 +57,6 @@ namespace DataExport.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        internal static System.Drawing.Icon Drive_Upload_96px_1104519_easyicon_net {
-            get {
-                object obj = ResourceManager.GetObject("Drive_Upload_96px_1104519_easyicon_net", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }

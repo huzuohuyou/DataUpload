@@ -92,11 +92,11 @@ namespace DataExport
         /// <returns></returns>
         public static string GetPatItemInfo(DataTable p_dtTable, string p_strName)
         {
-            if (p_dtTable != null && p_dtTable.Rows.Count == 1)
+            if (p_dtTable != null && p_dtTable.Rows.Count == 1 && p_dtTable.Columns.Contains(p_strName))
             {
                 return p_dtTable.Rows[0][p_strName].ToString();
             }
-            RemoteMessage.SendMessage("表为空或行不为1");
+            RemoteMessage.SendMessage("表为空|行不为1|表中无此列" + p_strName);
             return "";
         }
 
@@ -674,8 +674,8 @@ namespace DataExport
             switch (_strExportType)
             {
                 case "DB":
-                    ie = new ExportDB();
-                    PublicVar.ExportParam[0] = p_dsOnePatInfo;
+                    ie = new ExportDB(p_strObjectName,p_dsOnePatInfo);
+                    //PublicVar.ExportParam[0] = p_dsOnePatInfo;
                     break;
                 case "DBF":
                     ie = new ExportDBF();
@@ -691,14 +691,15 @@ namespace DataExport
                     break;
                 case "XML":
                     ie = new ExportXml(p_dsOnePatInfo, p_strObjectName, p_strPatientId, p_strVisitId);
-                    PublicVar.ExportParam[0] = p_dsOnePatInfo;
+                    //PublicVar.ExportParam[0] = p_dsOnePatInfo;
                     break;
                 default:
                     CommonFunction.WriteError("未知导出类型:" + _strExportType);
                     break;
             }
-            Thread t = new Thread(new ThreadStart(ie.Export));
-            t.Start();
+            ie.Export();
+            //Thread t = new Thread(new ThreadStart(ie.Export));
+            //t.Start();
         }
 
     }

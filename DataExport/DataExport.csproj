@@ -11,7 +11,9 @@
     <AssemblyName>DataExport</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <ApplicationIcon>17.ico</ApplicationIcon>
+    <ApplicationIcon>Drive_Upload_96px_1104519_easyicon.net.ico</ApplicationIcon>
+    <Win32Resource>
+    </Win32Resource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -247,6 +249,9 @@
     </None>
     <None Include="Web References\UploadMrInfoService\Service.disco" />
     <None Include="Web References\UploadMrInfoService\Service.wsdl" />
+    <Content Include="Drive_Upload_96px_1104519_easyicon.net.ico" />
+    <Content Include="icon.ico" />
+    <None Include="Resources\Drive_Upload_96px_1104519_easyicon.net.ico" />
     <Content Include="版本升级说明.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,7 @@ namespace DataExport
             return m_dtSource;
         }
 
-        public System.Data.DataTable GetTargetTable(string p_strTableName)
+        public DataTable GetTargetTable(string p_strTableName)
         {
             string m_strSQL = "select * from " + p_strTableName + " where 1=0 ";
             DataTable m_dtColumns = CommonFunction.OleExecuteBySQL(m_strSQL, "", "TARGET");
@@ -97,27 +97,27 @@ namespace DataExport
                 if (p_drSource.Table.Columns.Contains(dcItem))
                 {
                     string _strValue = string.Empty;
-                    if (_drValue[dcItem].ToString().StartsWith("@"))
-                    {
-                        string _strPatientId = _drValue["PATIENT_ID"].ToString();
-                        int _iVisitId = int.Parse(_drValue["VISIT_ID"].ToString());
-                        RemoteMessage.SendMessage("[调取模板]" + _strPatientId + "||" + _iVisitId.ToString() + "||" + _drValue[dcItem].ToString());
-                        try
-                        {
-                            _strValue = CallMrInfo2(_strPatientId, _iVisitId, _drValue[dcItem].ToString());
+                    //if (_drValue[dcItem].ToString().StartsWith("@"))
+                    //{
+                    //    string _strPatientId = _drValue["PATIENT_ID"].ToString();
+                    //    int _iVisitId = int.Parse(_drValue["VISIT_ID"].ToString());
+                    //    RemoteMessage.SendMessage("[调取模板]" + _strPatientId + "||" + _iVisitId.ToString() + "||" + _drValue[dcItem].ToString());
+                    //    try
+                    //    {
+                    //        _strValue = CallMrInfo2(_strPatientId, _iVisitId, _drValue[dcItem].ToString());
 
-                        }
-                        catch (Exception exp)
-                        {
-                            RemoteMessage.SendMessage("[获取模板信息错误]"+exp.Message);
-                            m_strValues += "无,";
-                        }
-                        RemoteMessage.SendMessage("[值]" + _strValue);
-                    }
-                    else
-                    {
-                        _strValue = _drValue[dcItem].ToString();
-                    }
+                    //    }
+                    //    catch (Exception exp)
+                    //    {
+                    //        RemoteMessage.SendMessage("[获取模板信息错误]"+exp.Message);
+                    //        m_strValues += "无,";
+                    //    }
+                    //    RemoteMessage.SendMessage("[值]" + _strValue);
+                    //}
+                    //else
+                    //{
+                    _strValue = _drValue[dcItem].ToString();
+                    //}
                     string type = m_dtColumns.Columns[dcItem].DataType.Name.ToString();
                     m_strValues += FixDateTime.makeInsertvalue(_strValue, false, m_strTargetDBType, type);
                 }
@@ -143,14 +143,12 @@ namespace DataExport
                                p_strTableName,
                                p_strColumns,
                                p_strValues);
-            RemoteMessage.SendMessage("[执行]:" + m_strSQL);
-
             if (CommonFunction.OleExecuteNonQuery(m_strSQL, "TARGET") == 1)
             {
-               
+                RemoteMessage.SendMessage("[执行]:" + m_strSQL + "......TRUE");
                 return true;
             }
-             
+            RemoteMessage.SendMessage("[执行]:" + m_strSQL + "......FALSE");
             CommonFunction.WriteError("执行异常[SQL]:" + m_strSQL);
             return false;
         }
@@ -160,7 +158,6 @@ namespace DataExport
         /// </summary>
         public void DoProcess()
         {
-
             string _strTableName = m_strTableName;
             int m_iItemSuccessCount = 0;
             int m_iItemFalseCount = 0;
@@ -168,14 +165,18 @@ namespace DataExport
             string m_strColumns = CombineColumns(_strTableName);
             foreach (DataRow drValue in m_dtSource.Rows)
             {
+                string _strPatientId = drValue["PATIENT_ID"].ToString();
+                string _strVisitId = drValue["VISIT_ID"].ToString();
                 string m_strValues = CombineValues(drValue);
                 if (ExeCuteSQL(_strTableName, m_strColumns, m_strValues))
                 {
                     m_iItemSuccessCount++;
+                    uctlRestoreManage.RemoveRecord(_strTableName, _strPatientId, _strVisitId);
                 }
                 else
                 {
                     m_iItemFalseCount++;
+                    uctlRestoreManage.LogFalsePatient(_strTableName,_strPatientId, _strVisitId);
                 }
             }
             CommonFunction.WriteLog("[表]" + _strTableName + "[成功]" + m_iItemSuccessCount + "[失败]" + m_iItemFalseCount);

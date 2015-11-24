@@ -23,13 +23,9 @@ CREATE TABLE PT_COMPARISON(
 ) ;
 
 CREATE TABLE PT_RESTORE(
-  OBJECT_NAME varchar(100) NULL,
   PATIENT_ID varchar(100) NULL,
   VISIT_ID varchar(100) NULL,
   LOG_DATE  varchar(100) NULL 
 ) ;
-
-alter table PT_RESTORE
-  add constraint PK_RESTORE primary key (OBJECT_NAME, PATIENT_ID, VISIT_ID);
 
 

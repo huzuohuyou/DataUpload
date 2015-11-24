@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using ToolFunction;
 using System.Threading;
+using System.Diagnostics;
 
 namespace DataExport
 {
@@ -14,7 +15,17 @@ namespace DataExport
     {
         public uctlRestoreManage()
         {
+            string _strExePath = Application.StartupPath + @"\MessagePlatform.exe";
+            Process.Start(_strExePath);
+            RemoteMessage.InitClient();
             InitializeComponent();
+            DataTable _dt= GetRestorePat();
+            dataGridView1.DataSource = _dt.DefaultView;
+        }
+
+        public string GetCurrentObject()
+        {
+            return dataGridView1.CurrentRow.Cells["OBJECT_NAME"].Value.ToString();
         }
 
         public string GetCurrentPatientId()
@@ -32,17 +43,33 @@ namespace DataExport
         private void button1_Click(object sender, EventArgs e)
         {
             //DataTable _dt = GetRestorePat();
-            FluenctExport fe = new FluenctExport(GetCurrentPatientId(),GetCurrentPatientVisitId());
-            Thread t = new Thread(fe.ExportOnePatInfoForAllObj);
-            t.Start();
+            FluenctExport fe = new FluenctExport();
+            fe.ExportOnePatInfoForOneObj(GetCurrentObject(), GetCurrentPatientId(), GetCurrentPatientVisitId());
+            //Thread t = new Thread(fe.ExportOnePatInfoForOneObj);
+            //t.Start();
+        }
+
+        /// <summary>
+        /// 恢复上传成功
+        /// 移出记录
+        /// </summary>
+        /// <param name="p_strObjectName"></param>
+        /// <param name="p_strPatientId"></param>
+        /// <param name="p_strVisitId"></param>
+        public static void RemoveRecord(string p_strObjectName, string p_strPatientId, string p_strVisitId)
+        {
+            string _strSQL = string.Format(@"delete from pt_restore where object_name = '{0}' and patient_id = '{1}' and visit_id = '{2}'", p_strObjectName, p_strPatientId, p_strVisitId);
+            int _n = CommonFunction.OleExecuteNonQuery(_strSQL, PublicVar.m_strEmrConnection);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             DataTable _dt = GetRestorePat();
-            FluenctExport fe = new FluenctExport(_dt);
-            Thread t = new Thread(fe.ExportPatsInfoForAllObj);
-            t.Start();
+            foreach (DataRow var in _dt.Rows)
+            {
+                FluenctExport fe = new FluenctExport();
+                fe.ExportOnePatInfoForOneObj(var["object_name"].ToString(), var["patient_id"].ToString(), var["visit_id"].ToString());
+            }
         }
 
         public DataTable GetRestorePat()
@@ -55,9 +82,9 @@ namespace DataExport
         /// <summary>
         /// 将导出失败病人的patient_id 和visit_id 记录下来
         /// </summary>
-        public static void LogFalsePatient(string p_strPatientId, string p_strVisitId)
+        public static void LogFalsePatient(string p_strObject,string p_strPatientId, string p_strVisitId)
         {
-            string _strSQL = string.Format(@"INSTERT INTO PT_RESTORE(PATIENT_ID,VISIT_ID,LOG_DATE) VALUES('{0}','{1}','{2}')", p_strPatientId, p_strVisitId, DateTime.Now.ToString());
+            string _strSQL = string.Format(@"INSERT INTO PT_RESTORE(PATIENT_ID,VISIT_ID,LOG_DATE,OBJECT_NAME) VALUES('{0}','{1}','{2}','{3}')", p_strPatientId, p_strVisitId, DateTime.Now.ToString(), p_strObject);
             int _n = CommonFunction.OleExecuteNonQuery(_strSQL, PublicVar.m_strEmrConnection);
             if (1 == _n)
             {

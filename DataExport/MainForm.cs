@@ -162,6 +162,12 @@ namespace DataExport
             CommonFunction.AddForm3(pl_showcontains,de);
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            uctlRestoreManage de = new uctlRestoreManage();
+            CommonFunction.AddForm3(pl_showcontains, de);
+        }
+
 
     }
 }

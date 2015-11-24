@@ -39,14 +39,15 @@ namespace DataExport
             #region 获取病人discharge_date_time
             //PublicProperty.ExportData = new DataSet();
             string _strDBType = uctlBaseConfig.GetConfig("DBType");
+            string _strTimeKind = uctlBaseConfig.GetConfig("TimeKind");
             string _strSQL = string.Empty;
             if ("ORACLE" == _strDBType.ToUpper())
             {
-                _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID ,n.NAME PATIENT_NAME,M.admission_date_time IN_TIME,M.discharge_date_time OUT_TIME ,M.dept_admission_to DEPT_NAME from  pat_visit m ,pat_master_index n where  {0} >TO_DATE('{1}','yyyy-MM-dd') and {0}< TO_DATE('{2}','yyyy-MM-dd') and m.patient_id = n.patient_id", "discharge_date_time", dt_sta.Text, dt_end.Text);
+                _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID ,n.NAME PATIENT_NAME,M.admission_date_time IN_TIME,M.discharge_date_time OUT_TIME ,M.dept_admission_to DEPT_NAME from  pat_visit m ,pat_master_index n where  {0} >TO_DATE('{1}','yyyy-MM-dd') and {0}< TO_DATE('{2}','yyyy-MM-dd') and m.patient_id = n.patient_id", _strTimeKind, dt_sta.Text, dt_end.Text);
             }
             else if ("SQLSERVER" == _strDBType.ToUpper())
             {
-                _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID ,n.NAME PATIENT_NAME,M.admission_date_time IN_TIME,M.discharge_date_time OUT_TIME ,M.dept_admission_to DEPT_NAME from  pat_visit m ,pat_master_index n where  {0} >'{1}' and {0}< '{2}' and m.patient_id = n.patient_id", "discharge_date_time", dt_sta.Text, dt_end.Text);
+                _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID ,n.NAME PATIENT_NAME,M.admission_date_time IN_TIME,M.discharge_date_time OUT_TIME ,M.dept_admission_to DEPT_NAME from  pat_visit m ,pat_master_index n where  {0} >'{1}' and {0}< '{2}' and m.patient_id = n.patient_id", _strTimeKind, dt_sta.Text, dt_end.Text);
             }
 
             ExportDB.m_strTimeRange = "[时间]:" + dt_sta.Text + "至" + dt_end.Text;

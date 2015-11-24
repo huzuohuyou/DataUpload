@@ -353,7 +353,7 @@ namespace ToolFunction
             {
                 Directory.CreateDirectory(_strFilePath);
             }
-            using (StreamWriter sw = new StreamWriter(_strFilePath + DateTime.Today.ToString("yyyy-MM-dd") + ".error", true))
+            using (StreamWriter sw = new StreamWriter(_strFilePath + DateTime.Today.ToString("yyyy-MM-dd") + "\\Excute.error", true))
             {
                 sw.WriteLine("[TIME]:" + DateTime.Now.ToString());
                 sw.WriteLine("[ERROR]:" + p_strMess);
@@ -410,12 +410,21 @@ namespace ToolFunction
             {
                 Directory.CreateDirectory(_strFilePath);
             }
-            using (StreamWriter sw = new StreamWriter(_strFilePath + DateTime.Today.ToString("yyyy-MM-dd") + ".log", true))
+            try
             {
-                sw.WriteLine("[TIME]:" + DateTime.Now.ToString());
-                sw.WriteLine("[EVENT]:" + p_strMess);
-                sw.WriteLine("");
+                using (StreamWriter sw = new StreamWriter(_strFilePath + DateTime.Today.ToString("yyyy-MM-dd") + ".log", true))
+                {
+                    sw.WriteLine("[TIME]:" + DateTime.Now.ToString());
+                    sw.WriteLine("[EVENT]:" + p_strMess);
+                    sw.WriteLine("");
+                }
             }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+            
         }
 
 

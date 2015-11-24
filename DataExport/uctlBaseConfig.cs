@@ -99,6 +99,7 @@ namespace DataExport
             string _strDBType = string.Empty;
             string _strTargetDBType = string.Empty;
             string _strXmlOutputPath = string.Empty;
+            string _strTimeKind = string.Empty;
             InitValue("ExportType", "DB");
             InitValue("XmlOutPutPath", "E:\\");
             InitValue("DbfPath", "123");
@@ -114,25 +115,26 @@ namespace DataExport
             _strXmlPath = config.AppSettings.Settings["XmlPath"].Value;
             _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
             _strXmlOutputPath = config.AppSettings.Settings["XmlOutputPath"].Value;
+            _strTimeKind = config.AppSettings.Settings["TimeKind"].Value;
             switch (_strExportType)
             {
                 case m_strDB:
-                    rb_db.Checked = true;
+                    //rb_db.Checked = true;
                     tabControl1.SelectedIndex = 0;
                     //txt_value.Text = _strTargetConnectionString;
                     break;
                 case m_strEXCEL:
-                    rb_excel.Checked = true;
+                    //rb_excel.Checked = true;
                     tabControl1.SelectedIndex = 1;
                     txt_excel.Text = _strExcelPath;
                     break;
                 case m_strDBF:
-                    rb_dbf.Checked = true;
+                    //rb_dbf.Checked = true;
                     tabControl1.SelectedIndex = 2;
                     txt_dbf.Text = _strDbfPath;
                     break;
                 case m_strXML:
-                    rb_xml.Checked = true;
+                    //rb_xml.Checked = true;
                     tabControl1.SelectedIndex = 3;
                     txt_xmlsavepath.Text = _strXmlOutputPath;
                     break;
@@ -140,16 +142,19 @@ namespace DataExport
                     throw new Exception("未知关键字[DB,DBF,XML,EXCEL]");
                     break;
             }
-            if (_strUploadFlag.ToUpper() =="TRUE")
-            {
-                checkBox1.Checked = true;
-            }
-            else
-            {
-                checkBox1.Checked = false;
-            }
+            //if (_strUploadFlag.ToUpper() =="TRUE")
+            //{
+            //    checkBox1.Checked = true;
+            //}
+            //else
+            //{
+            //    checkBox1.Checked = false;
+            //}
             comboBox1.Text = _strDBType;
             comboBox2.Text = _strTargetDBType;
+            comboBox3.Text = _strTimeKind;
+            comboBox4.Text = _strUploadFlag;
+            comboBox5.Text = _strExportType;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -174,40 +179,17 @@ namespace DataExport
 
         private void button7_Click(object sender, EventArgs e)
         {
-            string _strExportType = string.Empty;
-            string _strDBType = string.Empty;
-            _strDBType = comboBox1.Text;
-            if (rb_db.Checked)
-            {
-                _strExportType = rb_db.Tag.ToString();
-            }
-            if (rb_dbf.Checked)
-            {
-                _strExportType = rb_dbf.Tag.ToString();
-            }
-            if (rb_excel.Checked)
-            {
-                _strExportType = rb_excel.Tag.ToString();
-            }
-            if (rb_xml.Checked)
-            {
-                _strExportType = rb_xml.Tag.ToString();
-            }
             //获取Configuration对象
             Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            ////写入<add>元素的Value
+            string _strExportType = comboBox5.Text;
+            string _strDBType = comboBox1.Text;
+            string _strUpLoad = comboBox4.Text;
+            string _strTimeKind = comboBox3.Text;
+            config.AppSettings.Settings["TimeKind"].Value = _strTimeKind;
             config.AppSettings.Settings["ExportType"].Value = _strExportType;
             config.AppSettings.Settings["DBType"].Value = _strDBType;
-            if (checkBox1.Checked)
-            {
-                config.AppSettings.Settings["UploadFlag"].Value = "True";
-            }
-            else
-            {
-                config.AppSettings.Settings["UploadFlag"].Value = "False";
-            }
+            config.AppSettings.Settings["UploadFlag"].Value = _strUpLoad;
             config.Save(ConfigurationSaveMode.Modified);
-            //刷新，否则程序读取的还是之前的值（可能已装入内存）
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
             mf.SetBaseInfo();
         }
@@ -281,6 +263,26 @@ namespace DataExport
             Directory.CreateDirectory(Application.StartupPath + "//xml");
             Directory.CreateDirectory(Application.StartupPath + "//log");
             Directory.CreateDirectory(Application.StartupPath + "//error");
+        }
+
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox5.Text == "DB")
+            {
+                tabControl1.SelectedIndex = 0;
+            }
+            else if (comboBox5.Text == "DBF")
+            {
+                tabControl1.SelectedIndex = 2;
+            }
+            else if (comboBox5.Text == "XML")
+            {
+                tabControl1.SelectedIndex = 3;
+            }
+            else if (comboBox5.Text == "EXCEL")
+            {
+                tabControl1.SelectedIndex = 1;
+            }
         }
 
         //public static Dictionary<string, string> GetConfig() {

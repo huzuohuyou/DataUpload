@@ -44,8 +44,9 @@ namespace DataExport.文件接口
         /// <param name="p_dsPats"></param>
         public void PreDownLoadFile()
         {
-            string _strSQL = string.Format(@"select n.patient_id,n.visit_id,n.file_name from pat_visit m,mr_file_index n where m.patient_id = n.patient_id and m.visit_id = n.visit_id and  m.discharge_date_time >TO_DATE('{0}','yyyy-MM-dd') and m.discharge_date_time< TO_DATE('{1}','yyyy-MM-dd')", m_strStart, m_strEnd);
-            DataTable m_dtPats = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            string _strTimeKind = uctlBaseConfig.GetConfig("TimeKind");
+            string _strSQL = string.Format(@"select n.patient_id,n.visit_id,n.file_name from pat_visit m,mr_file_index n where m.patient_id = n.patient_id and m.visit_id = n.visit_id and  m.{2} >TO_DATE('{0}','yyyy-MM-dd') and m.{2}< TO_DATE('{1}','yyyy-MM-dd')", m_strStart, m_strEnd, _strTimeKind);
+            DataTable m_dtPats = CommonFunction.OleExecuteBySQL(_strSQL, "", PublicVar.m_strEmrConnection);
             foreach (DataRow var in m_dtPats.Rows)
             {
                 m_strPatientId = var["PATIENT_ID"].ToString();
