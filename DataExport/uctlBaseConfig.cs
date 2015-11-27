@@ -100,12 +100,16 @@ namespace DataExport
             string _strTargetDBType = string.Empty;
             string _strXmlOutputPath = string.Empty;
             string _strTimeKind = string.Empty;
-            InitValue("ExportType", "DB");
+            string _strUseInterface = string.Empty;
+            string _strUrl = string.Empty;
+            InitValue("ExportType", "XML");
             InitValue("XmlOutPutPath", "E:\\");
             InitValue("DbfPath", "123");
             InitValue("ExcelPath", "123");
             InitValue("XmlPath", "123");
-            InitValue("UploadFlag", "False");
+            InitValue("UploadFlag", "FALSE");
+            InitValue("UseInterface", "FALSE");
+            InitValue("WebServiceUrl", "http://127.0.0.1/Service.asmx");
             Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             _strExportType = config.AppSettings.Settings["ExportType"].Value;
             _strDBType = config.AppSettings.Settings["DBType"].Value;
@@ -116,6 +120,8 @@ namespace DataExport
             _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
             _strXmlOutputPath = config.AppSettings.Settings["XmlOutputPath"].Value;
             _strTimeKind = config.AppSettings.Settings["TimeKind"].Value;
+            _strUseInterface = config.AppSettings.Settings["UseInterface"].Value;
+            _strUrl = config.AppSettings.Settings["WebServiceUrl"].Value;
             switch (_strExportType)
             {
                 case m_strDB:
@@ -142,19 +148,13 @@ namespace DataExport
                     throw new Exception("Î´Öª¹Ø¼ü×Ö[DB,DBF,XML,EXCEL]");
                     break;
             }
-            //if (_strUploadFlag.ToUpper() =="TRUE")
-            //{
-            //    checkBox1.Checked = true;
-            //}
-            //else
-            //{
-            //    checkBox1.Checked = false;
-            //}
             comboBox1.Text = _strDBType;
             comboBox2.Text = _strTargetDBType;
             comboBox3.Text = _strTimeKind;
             comboBox4.Text = _strUploadFlag;
             comboBox5.Text = _strExportType;
+            comboBox6.Text = _strUseInterface;
+            textBox4.Text = _strUrl;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -185,10 +185,14 @@ namespace DataExport
             string _strDBType = comboBox1.Text;
             string _strUpLoad = comboBox4.Text;
             string _strTimeKind = comboBox3.Text;
+            string _strUseInterface = comboBox6.Text;
+            string _strUrl = textBox4.Text;
             config.AppSettings.Settings["TimeKind"].Value = _strTimeKind;
             config.AppSettings.Settings["ExportType"].Value = _strExportType;
             config.AppSettings.Settings["DBType"].Value = _strDBType;
             config.AppSettings.Settings["UploadFlag"].Value = _strUpLoad;
+            config.AppSettings.Settings["UseInterface"].Value = _strUseInterface;
+            config.AppSettings.Settings["WebServiceUrl"].Value = _strUrl;
             config.Save(ConfigurationSaveMode.Modified);
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
             mf.SetBaseInfo();
@@ -225,7 +229,7 @@ namespace DataExport
 
         private void button9_Click_1(object sender, EventArgs e)
         {
-            CommonFunction.WriteError("123","123123");
+            WebServiceHelper.Test();
         }
 
         private void button10_Click(object sender, EventArgs e)
@@ -284,6 +288,32 @@ namespace DataExport
                 tabControl1.SelectedIndex = 1;
             }
         }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+            InitDBEnviroment();
+        }
+
+
+        public void InitDBEnviroment()
+        {
+            string _strEnviroment = Application.StartupPath + "\\Enviroment.xml";
+            DataSet _dsDBEnviroment = CommonFunction.ConvertXMLFileToDataSet(_strEnviroment);
+            foreach (DataRow var in _dsDBEnviroment.Tables[0].Rows)
+            {
+                int _n = CommonFunction.OleExecuteNonQuery(var["sql"].ToString(), PublicVar.m_strEmrConnection);
+                //if (1==_n)
+                //{
+                //    uctlMessageBox.frmDisappearShow("³É¹¦Ö´ÐÐÓï¾ä" + var["name"].ToString());
+                //}
+                //else
+                //{
+                //    uctlMessageBox.frmDisappearShow("Óï¾äÖ´ÐÐÊ§°ÜÇë½ÃÕýEnviroment.xml");
+                //}
+            }
+            uctlMessageBox.frmDisappearShow("Óï¾äÖ´ÐÐÍê³É");
+        }
+
 
         //public static Dictionary<string, string> GetConfig() {
         //    Dictionary<string, string> _dict = new Dictionary<string, string>();

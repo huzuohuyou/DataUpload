@@ -34,9 +34,9 @@ namespace DataExport
         /// <returns></returns>
         public static string GetEmrInfo(string p_strPatientId, int p_nVisitId, string p_strElemName)
         {
-            
-            string _strResult = es.GetMRInfoByEleMentName(p_strPatientId, p_nVisitId, p_strElemName);
-            return _strResult;
+            return "";
+            //string _strResult = es.GetMRInfoByEleMentName(p_strPatientId, p_nVisitId, p_strElemName);
+            //return _strResult;
 
             //string _strWebServiceUrl = ConfigurationManager.AppSettings["WebServiceUrl"].ToString();
             //object o = WebServiceHelper.GetWebServiceInstance(_strWebServiceUrl);
@@ -56,8 +56,10 @@ namespace DataExport
         /// <returns></returns>
         public string GetMrInfo(string p_strPatientId, int p_nVisitId, string p_strElemName)
         {
-            string _strResult = es.GetMRInfoByEleMentName(p_strPatientId, p_nVisitId, p_strElemName);
-            return _strResult;
+            return "";
+
+            //string _strResult = es.GetMRInfoByEleMentName(p_strPatientId, p_nVisitId, p_strElemName);
+            //return _strResult;
         }
 
     }

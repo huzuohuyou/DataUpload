@@ -23,13 +23,11 @@ namespace MessagePlatform
                 TcpChannel channel = new TcpChannel(8085);
                 ChannelServices.RegisterChannel(channel, false);
                 RemotingConfiguration.RegisterWellKnownServiceType(typeof(ToolFunction.ConsoleMessage), "ConsoleMessage", WellKnownObjectMode.SingleCall);
-
                 System.Console.WriteLine("Server:Press Enter key to exit");
                 System.Console.ReadLine();
             }
             catch (Exception)
             {
-                
                 throw;
             }
            

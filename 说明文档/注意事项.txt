@@ -12,4 +12,8 @@
 5.sql中每个字段与中间库每个字段一一对应
 
 5.注意sql脚本的格式为utf-8其他格式会导致中文乱码
-哈哈哈
+
+6.特殊DB字段获取以@符号开始
+
+@select ROUND(months_between(vv.admission_date_time, tt.date_of_birth) / 12,0) AGE from pat_master_index tt, pat_visit vv where tt.patient_id = vv.patient_id and vv.patient_id = '@PATIENT_ID' AND VISIT_ID = @VISIT_ID
+@SELECT TO_CHAR(D.DISCHARGE_DATE_TIME,'yyyymmddHHMISS') FROM PAT_VISIT D where d.patient_id = '@PATIENT_ID' AND d.VISIT_ID = @VISIT_ID

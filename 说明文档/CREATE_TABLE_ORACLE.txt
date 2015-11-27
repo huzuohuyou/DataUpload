@@ -1,10 +1,8 @@
-DROP TABLE  PT_TABLES_DICT
-
 CREATE TABLE PT_TABLES_DICT(	
 	TABLE_NAME varchar2(100) NULL,
         MS varchar2(100) NULL,
         exportflag varchar2(10) NULL
-)
+);
 
 CREATE TABLE PT_CHAPTER_DICT(	
 	TABLE_NAME varchar2(100) NULL,
@@ -14,7 +12,7 @@ CREATE TABLE PT_CHAPTER_DICT(
 );
 
 alter table PT_CHAPTER_DICT
-  add constraint PK_CHAPTER_ID primary key (CHAPTER_NAME, TABLE_NAME)
+  add constraint PK_CHAPTER_ID primary key (CHAPTER_NAME, TABLE_NAME);
 
 CREATE TABLE PT_COMPARISON(
   FIELD_NAME varchar(100) NULL,

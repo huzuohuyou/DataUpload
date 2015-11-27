@@ -348,12 +348,12 @@ namespace ToolFunction
         /// <param name="p_strMess"></param>
         public static void WriteError(string p_strMess)
         {
-            string _strFilePath = Application.StartupPath + @"\error\";
+            string _strFilePath = Application.StartupPath + @"\error\" + DateTime.Today.ToString("yyyy-MM-dd")+"\\";
             if (!Directory.Exists(_strFilePath))
             {
                 Directory.CreateDirectory(_strFilePath);
             }
-            using (StreamWriter sw = new StreamWriter(_strFilePath + DateTime.Today.ToString("yyyy-MM-dd") + "\\Excute.error", true))
+            using (StreamWriter sw = new StreamWriter(_strFilePath + "\\Excute.error", true))
             {
                 sw.WriteLine("[TIME]:" + DateTime.Now.ToString());
                 sw.WriteLine("[ERROR]:" + p_strMess);
@@ -1033,13 +1033,14 @@ namespace ToolFunction
             }
             catch (System.Exception ex)
             {
-                throw ex;
+                MessageBox.Show(ex.ToString());
             }
             finally
             {
                 if (reader != null)
                     reader.Close();
             }
+            return null;
         }
 
 

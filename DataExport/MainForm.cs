@@ -74,8 +74,8 @@ namespace DataExport
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //≈Rïr‘]·å123
             EmrInfoManagement.InitStatus();
-            //EmrInfo.SetUrl();
             Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             string _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
             if ("TRUE" == _strUploadFlag.ToUpper())
@@ -145,7 +145,7 @@ namespace DataExport
 
         private void button5_Click(object sender, EventArgs e)
         {
-            uctlConfigDict de = new uctlConfigDict();
+            uctlDictManage de = new uctlDictManage();
             CommonFunction.AddForm3(pl_showcontains, de);
         }
 

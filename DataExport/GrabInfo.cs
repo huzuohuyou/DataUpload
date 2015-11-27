@@ -237,7 +237,8 @@ namespace DataExport
         /// <returns></returns>
         public static string GrabPatientInfoFromDBBySQL(string p_strChapterDetail, string p_strPatientId, string p_strVisitId)
         {
-           string _strSQL= p_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
+            string _strSQL = p_strChapterDetail.Replace("@PATIENT_ID", p_strPatientId).Replace("@VISIT_ID", p_strVisitId);
+            _strSQL = _strSQL.Replace("@", "");
             DataTable _dtTemp = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
             if (_dtTemp == null)
             {

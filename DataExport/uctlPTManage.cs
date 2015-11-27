@@ -23,8 +23,13 @@ namespace DataExport
 
         public void InitData()
         {
+
             string _strSQL = string.Format("select TABLE_NAME,MS,EXPORTFLAG  from pt_tables_dict ");
             DataTable _dtOject = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            if (_dtOject==null)
+            {
+                MessageBox.Show("Î´ßB½Ó”µ“þŽì");
+            }
             dataGridView1.DataSource = _dtOject;
             _strSQL = string.Format(@"select  table_name,class,chapter_name,data_detail,'' CHOSE from pt_chapter_dict where table_name = '{0}'", GetCurrentObjectName());
             DataTable _dtChapter = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");

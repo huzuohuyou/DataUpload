@@ -35,7 +35,7 @@ namespace DataExport.文件接口
             try
             {
                 EmrSysPubVar.fillHospitalName();
-                if ( EmrSysPubVar.fillFileSystemInfo())
+                if (EmrSysPubVar.fillFileSystemInfo())
                 {
                     //RemoteMessage.SendMessage("连接文件服务器状态初始化.......");
                     EmrSysPubVar.setTempFileFullName(Application.StartupPath + "\\file\\mrtemp");
@@ -302,13 +302,22 @@ namespace DataExport.文件接口
         /// <returns></returns>
         public static string GetXmlContent(string strMrFile)
         {
-            string strRootPath = strMrFile + ".xml";
-            string strContent = string.Empty;
-            if (SaveFileToFieldElem(strMrFile, strRootPath, 1))
+            try
             {
-                strContent = System.IO.File.ReadAllText(strRootPath, Encoding.Default);
+                string strRootPath = strMrFile + ".xml";
+                string strContent = string.Empty;
+                if (SaveFileToFieldElem(strMrFile, strRootPath, 1))
+                {
+                    strContent = System.IO.File.ReadAllText(strRootPath, Encoding.Default);
+                }
+                return strContent;
             }
-            return strContent;
+            catch (Exception exp)
+            {
+                CommonFunction.WriteError(exp.ToString());
+                return "";
+            }
+            return "";
         }
 
 

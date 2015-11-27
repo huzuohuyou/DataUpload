@@ -11,7 +11,7 @@
     <AssemblyName>DataExport</AssemblyName>
     <StartupObject>
     </StartupObject>
-    <ApplicationIcon>Drive_Upload_96px_1104519_easyicon.net.ico</ApplicationIcon>
+    <ApplicationIcon>Ico\Drive_Upload_96px_1104519_easyicon.net.ico</ApplicationIcon>
     <Win32Resource>
     </Win32Resource>
   </PropertyGroup>
@@ -118,17 +118,17 @@
     <Compile Include="uctlXmlStrManage.Designer.cs">
       <DependentUpon>uctlXmlStrManage.cs</DependentUpon>
     </Compile>
-    <Compile Include="XmlRWrite.cs" />
+    <Compile Include="外部接口\CallInterface.cs" />
     <Compile Include="外部接口\EmrInfo.cs" />
-    <Compile Include="DB\ExportDB.cs" />
-    <Compile Include="EXCEL\ExportExcel.cs" />
-    <Compile Include="XML\AsynXmlExport.cs" />
+    <Compile Include="Database\ExportDB.cs" />
+    <Compile Include="Excel\ExportExcel.cs" />
+    <Compile Include="Xml\AsynXmlExport.cs" />
     <Compile Include="ExportFile.cs" />
     <Compile Include="DBF\ExportDBF.cs" />
-    <Compile Include="DB\AsynDbExport.cs" />
+    <Compile Include="Database\AsynDbExport.cs" />
     <Compile Include="InterFace\IFreshData.cs" />
     <Compile Include="InterFace\IValidate.cs" />
-    <Compile Include="PublicProperty.cs" />
+    <Compile Include="PublicVar.cs" />
     <Compile Include="FixDateTime.cs" />
     <Compile Include="InterFace\IExport.cs" />
     <Compile Include="uctlShowFixInfo.cs">
@@ -170,9 +170,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="uctlConfigDict.resx">
+    <EmbeddedResource Include="uctlDictManage.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>uctlConfigDict.cs</DependentUpon>
+      <DependentUpon>uctlDictManage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="uctlDoExport.resx">
       <SubType>Designer</SubType>
@@ -200,7 +200,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="SQL.config" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -212,11 +211,11 @@
     <Compile Include="uctlBaseConfig.Designer.cs">
       <DependentUpon>uctlBaseConfig.cs</DependentUpon>
     </Compile>
-    <Compile Include="uctlConfigDict.cs">
+    <Compile Include="uctlDictManage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="uctlConfigDict.Designer.cs">
-      <DependentUpon>uctlConfigDict.cs</DependentUpon>
+    <Compile Include="uctlDictManage.Designer.cs">
+      <DependentUpon>uctlDictManage.cs</DependentUpon>
     </Compile>
     <Compile Include="uctlDoExport.cs">
       <SubType>UserControl</SubType>
@@ -235,22 +234,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="WebServiceHelper.cs" />
-    <Compile Include="Win32API.cs" />
-    <Compile Include="XML\ExportXml.cs" />
+    <Compile Include="外部接口\WebServiceHelper.cs" />
+    <Compile Include="Xml\ExportXml.cs" />
     <Compile Include="文件接口\EmrFile.cs" />
     <Compile Include="文件接口\EmrInfoManagement.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="17.ico" />
+    <Content Include="Ico\17.ico" />
     <None Include="Web References\UploadMrInfoService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Web References\UploadMrInfoService\Service.disco" />
     <None Include="Web References\UploadMrInfoService\Service.wsdl" />
-    <Content Include="Drive_Upload_96px_1104519_easyicon.net.ico" />
-    <Content Include="icon.ico" />
+    <Content Include="Ico\Drive_Upload_96px_1104519_easyicon.net.ico" />
+    <Content Include="Ico\icon.ico" />
     <None Include="Resources\Drive_Upload_96px_1104519_easyicon.net.ico" />
     <Content Include="版本升级说明.txt" />
   </ItemGroup>

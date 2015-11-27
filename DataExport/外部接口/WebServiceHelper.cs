@@ -1,20 +1,69 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Net;
-using System.Web.Services.Description;
 using System.CodeDom;
-using Microsoft.CSharp;
 using System.CodeDom.Compiler;
-using System.Reflection;
+using System.Web.Services;
+using System.Web.Services.Description;
+using System.Web.Services.Protocols;
 using System.Xml.Serialization;
+using System.Reflection;
+using System;
+using Microsoft.CSharp;
+using System.Text;
 using System.Windows.Forms;
+
 
 namespace DataExport
 {
     public class WebServiceHelper
     {
+
+        public static void Test()
+        {
+            try
+            {
+                string _strUrl = uctlBaseConfig.GetConfig("WebServiceUrl");
+                // 1. 使用 WebClient 下载 WSDL 信息。
+                WebClient web = new WebClient();
+                Stream stream = web.OpenRead(_strUrl);
+                // 2. 创建和格式化 WSDL 文档。
+                ServiceDescription description = ServiceDescription.Read(stream);
+                // 3. 创建客户端代理代理类。
+                ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
+                importer.ProtocolName = "Soap"; // 指定访问协议。
+                importer.Style = ServiceDescriptionImportStyle.Client; // 生成客户端代理。
+                importer.CodeGenerationOptions = CodeGenerationOptions.GenerateProperties | CodeGenerationOptions.GenerateNewAsync;
+                importer.AddServiceDescription(description, null, null); // 添加 WSDL 文档。
+                // 4. 使用 CodeDom 编译客户端代理类。
+                CodeNamespace nmspace = new CodeNamespace(); // 为代理类添加命名空间，缺省为全局空间。
+                CodeCompileUnit unit = new CodeCompileUnit();
+                unit.Namespaces.Add(nmspace);
+                ServiceDescriptionImportWarnings warning = importer.Import(nmspace, unit);
+                CodeDomProvider provider = CodeDomProvider.CreateProvider("CSharp");
+                CompilerParameters parameter = new CompilerParameters();
+                parameter.GenerateExecutable = false;
+                parameter.OutputAssembly = "DynamicWebService.dll"; // 可以指定你所需的任何文件名。
+                parameter.ReferencedAssemblies.Add("System.dll");
+                parameter.ReferencedAssemblies.Add("System.XML.dll");
+                parameter.ReferencedAssemblies.Add("System.Web.Services.dll");
+                parameter.ReferencedAssemblies.Add("System.Data.dll");
+                CompilerResults result = provider.CompileAssemblyFromDom(parameter, unit);
+                if (result.Errors.HasErrors)
+                {
+                    // 显示编译错误信息
+                }
+                //调用程序集文件演示
+                Assembly asm = Assembly.LoadFrom("DynamicWebService.dll");
+                Type t = asm.GetType("WebService");
+                object o = Activator.CreateInstance(t);
+                MethodInfo method = t.GetMethod("HelloWorld");
+                object oo = method.Invoke(o, null);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         /// <summary>   
         /// 动态调用WebService   
