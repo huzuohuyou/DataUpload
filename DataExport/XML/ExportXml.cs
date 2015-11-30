@@ -20,6 +20,7 @@ namespace DataExport
         public string m_strObjectName = string.Empty;
         public string m_strPatientId = string.Empty;
         public string m_strVisitId = string.Empty;
+        public string m_strFileNo = string.Empty;
         public DataSet m_dsPatInfo = new DataSet();
 
         public ExportXml() { }
@@ -217,7 +218,7 @@ namespace DataExport
             if (IsUseInterface())
             {
                 UploadInterface ui = new UploadInterface();
-                ui.CallInterface(_strXml, m_strPatientId +  m_strVisitId);
+                ui.CallInterface(_strXml, _strFiledName);
 
             }
             else

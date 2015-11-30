@@ -12,11 +12,11 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Xml.Serialization;
+using System.Data.OleDb;
 
 
 /// <summary>
-///青岛大学医学院附属医院
-/// 本接口支持数据库为SQL SERVER2000或者更高版本
+/// 数据上传外部接口
 /// </summary>
 [WebService(Namespace = "http://tempuri.org/")]
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
@@ -35,16 +35,87 @@ public class EmrService : System.Web.Services.WebService
         return "123123";
     }
 
+    public struct _struPats { public string _strObjectName; public string _strPatientId; public string _strVisitId;};
+
+    /// <summary>
+    /// 获取inpno
+    /// </summary>
+    /// <param name="p_strPatientId"></param>
+    /// <param name="p_strVisitId"></param>
+    /// <returns></returns>
+    public string GetInpNo(string p_strPatientId, string p_strVisitId)
+    {
+        DataSet _dsR = new DataSet();
+        string _strSQL = string.Format("select inp_no from pat_master_index where patient_id = '{0}'", p_strPatientId);
+        ConnectionStringSettings sEmr = ConfigurationManager.ConnectionStrings["EMRConnectionString"];
+        using (OleDbConnection connEMR = new OleDbConnection(sEmr.ConnectionString))
+        {
+            try
+            {
+                connEMR.Open();
+                OleDbCommand cmdEMR = connEMR.CreateCommand();
+                OleDbDataAdapter daEMR = new OleDbDataAdapter();
+                cmdEMR.CommandText = _strSQL;
+                daEMR.SelectCommand = cmdEMR;
+                daEMR.Fill(_dsR);
+                if (_dsR.Tables[0].Rows.Count == 1)
+                {
+                    return _dsR.Tables[0].Rows[0]["inp_no"].ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// 获取字符串结构体信息
+    /// </summary>
+    /// <param name="p_strDocumentId"></param>
+    /// <returns></returns>
+    public _struPats GetParams(string p_strDocumentId)
+    {
+        string[] _arrParam = p_strDocumentId.Split('_');
+        if (_arrParam.Length == 3)
+        {
+            _struPats s = new _struPats();
+            s._strObjectName = _arrParam[0];
+            s._strPatientId = _arrParam[1];
+            s._strVisitId = _arrParam[2];
+            return s;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 获取文件序号
+    /// </summary>
+    /// <returns></returns>
+    public string GetFileNo(_struPats p) {
+        return "";
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="p_strXml"></param>
+    /// <param name="p_strDocumentId"></param>
+    /// <returns></returns>
     [WebMethod]
     public string CallInterface(string p_strXml, string p_strDocumentId)
     {
+        _struPats s = GetParams(p_strDocumentId);
+        string _strInpNo = GetInpNo(s._strPatientId, s._strVisitId);
         p_strXml = System.Text.Encoding.UTF8.GetString(System.Text.Encoding.UTF8.GetBytes(p_strXml));
         string _strTemp = "<ProvideAndRegisterDocumentSetRequest xmlns=\"urn:hl7-org:v3\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"urn:hl7-org:v3 ../multicacheschemas/ProvideAndRegisterDocumentSetRequest.xsd\">";
-        _strTemp += "<ID root=\"EMR\" extension=\"UID\"/>";
+        _strTemp += "<ID root=\"EMR\" extension=\"{3}\"/>";
         _strTemp += "<SourcePatientID>patient_id</SourcePatientID>";
         _strTemp += "<SourcePatientName>name</SourcePatientName>";
         _strTemp += "<HealthCardId>健康卡号</HealthCardId>";
-        _strTemp += "<IdentityId>ID_NO</IdentityId>";
+        _strTemp += "<IdentityId>{2}</IdentityId>";
         _strTemp += "<Organization id=\"40001401-4\">";
         _strTemp += "<Name>中日友好医院</Name>";
         _strTemp += "<TelephoneNumber areaCode=\"010\" number=\"组织机构电话\"/>";
@@ -79,7 +150,7 @@ public class EmrService : System.Web.Services.WebService
         _strTemp += "<Content>{0}</Content>";
         _strTemp += "</Document>";
         _strTemp += "</ProvideAndRegisterDocumentSetRequest>";
-        string _strResult = string.Format(_strTemp, p_strXml, p_strDocumentId);
+        string _strResult = string.Format(_strTemp, p_strXml, p_strDocumentId,"","","");
         return "123";
     }
 

@@ -62,11 +62,19 @@ namespace DataExport
 
         public string GetCurrentChapter()
         {
+            if (dataGridView4.CurrentRow.Cells["chapter_name"].Value==null)
+            {
+                return "";
+            }
             return dataGridView4.CurrentRow.Cells["chapter_name"].Value.ToString();
         }
 
         public string GetCurrentDictItem()
         {
+            if (dataGridView4.CurrentRow.Cells["LOCAL"].Value == null)
+            {
+                return "";
+            }
             return dataGridView3.CurrentRow.Cells["LOCAL"].Value.ToString();
         }
 

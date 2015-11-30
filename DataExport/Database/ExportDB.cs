@@ -175,6 +175,7 @@ namespace DataExport
             DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
             if (_dtObject == null)
             {
+                CommonFunction.WriteError(_strSQL);
                 MessageBox.Show("数据库中不存在表" + p_strOjbectName);
                 return null;
             }

@@ -32,11 +32,13 @@
             this.fbd_file = new System.Windows.Forms.FolderBrowserDialog();
             this.sfd_file = new System.Windows.Forms.SaveFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -92,8 +94,6 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.label19 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -144,6 +144,14 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(365, 308);
             this.panel1.TabIndex = 7;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox4.Location = new System.Drawing.Point(91, 221);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(204, 23);
+            this.textBox4.TabIndex = 15;
             // 
             // comboBox5
             // 
@@ -197,13 +205,23 @@
             // button8
             // 
             this.button8.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button8.Location = new System.Drawing.Point(125, 261);
+            this.button8.Location = new System.Drawing.Point(116, 261);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(75, 27);
             this.button8.TabIndex = 12;
             this.button8.Text = "打开配置文件";
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(10, 223);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(56, 17);
+            this.label19.TabIndex = 1;
+            this.label19.Text = "接口地址";
             // 
             // label18
             // 
@@ -274,7 +292,7 @@
             // button14
             // 
             this.button14.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button14.Location = new System.Drawing.Point(223, 261);
+            this.button14.Location = new System.Drawing.Point(222, 261);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(75, 27);
             this.button14.TabIndex = 8;
@@ -302,7 +320,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 26);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(494, 278);
+            this.tabPage3.Size = new System.Drawing.Size(438, 278);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "导出DBF";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -354,7 +372,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 26);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(494, 278);
+            this.tabPage2.Size = new System.Drawing.Size(438, 278);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "导出EXCEL";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -404,7 +422,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 26);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(494, 278);
+            this.tabPage1.Size = new System.Drawing.Size(438, 278);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "导入数据库";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -418,7 +436,7 @@
             this.groupBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(488, 272);
+            this.groupBox1.Size = new System.Drawing.Size(432, 272);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             // 
@@ -780,24 +798,6 @@
             this.tabPage6.TabIndex = 1;
             this.tabPage6.Text = "测试";
             this.tabPage6.UseVisualStyleBackColor = true;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(10, 223);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(56, 17);
-            this.label19.TabIndex = 1;
-            this.label19.Text = "接口地址";
-            // 
-            // textBox4
-            // 
-            this.textBox4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox4.Location = new System.Drawing.Point(91, 221);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(204, 23);
-            this.textBox4.TabIndex = 15;
             // 
             // uctlBaseConfig
             // 

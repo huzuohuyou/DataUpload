@@ -14,9 +14,9 @@ namespace DataExport.外部接口
             es.Url = ConfigurationManager.AppSettings["WebServiceUrl"].ToString();
         }
 
-        public void CallInterface(string p_strXml)
+        public void CallInterface(string p_strXml,string p_strDocumentId)
         {
-            string _s = es.CallInterface(p_strXml);
+            string _s = es.CallInterface(p_strXml, p_strDocumentId);
         }
     }
 }
