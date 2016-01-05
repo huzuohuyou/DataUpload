@@ -22,17 +22,9 @@ namespace DataExport
         public static string m_strTargetDBType = ConfigurationManager.AppSettings["TARGETDBTYPE"].ToUpper();
         public static string m_strSQL = string.Empty;
         public static string m_strMess = string.Empty;
-        public AsynDbExport m_MyParam = null;
+        public SingleObjectDBExport m_MyParam = null;
         public static DataSet m_dsSource = new DataSet();
-        public static string m_strObjectName = string.Empty;
 
-        public ExportDB() { }
-
-        public ExportDB(string p_strObjectName, DataSet p_dsSource)
-        {
-            m_dsSource = p_dsSource;
-            m_strObjectName = p_strObjectName;
-        }
 
         private static void InsertDataIntoTarget(object o)
         {
@@ -49,14 +41,14 @@ namespace DataExport
                 //修改人:吴海龙;修改时间2014-07-19;修改原因:从pt_tables_dict 设置那些表导出
                 m_strSQL = string.Format("select * from pt_tables_dict where  exportflag = 'TRUE'");
                 DataTable _dtTarget = CommonFunction.OleExecuteBySQL(m_strSQL, "", "EMR");
-                //foreach (DataRow drTarget in _dtTarget.Rows)
-                //{
-                //RemoteMessage.SendMessage("开启" + drTarget["TABLE_NAME"].ToString() + "数据上传线程");
-                AsynDbExport p = new AsynDbExport(m_strObjectName, p_dsSource);
-                p.DoProcess();
-                //Thread t = new Thread(new ThreadStart(p.DoProcess));
-                //t.Start();
-                //}
+                foreach (DataRow drTarget in _dtTarget.Rows)
+                {
+                    RemoteMessage.SendMessage("开启" + drTarget["TABLE_NAME"].ToString() + "数据上传线程");
+                    SingleObjectDBExport p = new SingleObjectDBExport(drTarget["TABLE_NAME"].ToString(), p_dsSource);
+                    p.DoProcess();
+                    //Thread t = new Thread(new ThreadStart(p.DoProcess));
+                    //t.Start();
+                }
             }
             catch (Exception exp)
             {
@@ -156,8 +148,7 @@ namespace DataExport
 
         public void Export()
         {
-            //InsertDataIntoTarget(PublicVar.ExportParam[0]);
-            Insert(m_dsSource);
+            InsertDataIntoTarget(PublicVar.ExportParam[0]);
         }
 
         /// <summary>
@@ -171,14 +162,8 @@ namespace DataExport
             _dtTemp.Columns.Add("CLASS");
             _dtTemp.Columns.Add("CHAPTER_NAME");
             //_dtTemp.Columns.Add("DATA_DETAIL");
-            string _strSQL = string.Format(@"select * from {0} where 1=0",p_strOjbectName);
+            string _strSQL = string.Format(@"selct * from '{0}' where 1=0",p_strOjbectName);
             DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
-            if (_dtObject == null)
-            {
-                CommonFunction.WriteError(_strSQL);
-                MessageBox.Show("数据库中不存在表" + p_strOjbectName);
-                return null;
-            }
             foreach (DataColumn var in _dtObject.Columns)
             {
                 _dtTemp.Rows.Add("FILE", var.Caption.ToUpper());
@@ -216,10 +201,10 @@ namespace DataExport
             if (_dtLocal == null)
             {
                 throw new Exception("SQL语句有误" + _strSQL);
-            }
+            }            
             if (!_dtLocal.Columns.Contains("PATIENT_ID")||!_dtLocal.Columns.Contains("VISIT_ID"))
             {
-                 ShowFixInfo.m_strWarning = ("警告:不存在 PATIENT_ID , VISIT_ID 列");
+                 ShowFixInfo.m_strWarning += ("警告:不存在 PATIENT_ID , VISIT_ID 列");
             }
             string _strFalse = string.Empty;
             foreach (DataColumn var in _dtTarget.Columns)
@@ -234,7 +219,13 @@ namespace DataExport
                     _strFalse += "[" + var.Caption + "]";
                 }
             }
-            return "对象:[" + p_strTableName + "] 无对照条目:" + _strFalse;
+            if (_strFalse=="")
+            {
+                 ShowFixInfo.m_strWarning += "对象:[" + p_strTableName + "] 对照条目完整";
+                 return ShowFixInfo.m_strWarning;
+            }
+             ShowFixInfo.m_strWarning += "对象:[" + p_strTableName + "] 无对照条目:" + _strFalse;
+             return ShowFixInfo.m_strWarning;
         }
 
         #endregion
@@ -244,21 +235,26 @@ namespace DataExport
         /// </summary>
         /// <param name="p_strSQL">sql脚本</param>
         /// <param name="p_strFileName">目标表的名称</param>
-        public static void SaveSQL(string p_strSQL, string p_strFileName)
+        public static bool SaveSQL(string p_strSQL, string p_strFileName)
         {
-            string _strPath = Application.StartupPath + "/sql/";
-            if (Directory.Exists(_strPath))
+            try
             {
+                string _strPath = Application.StartupPath + "/sql/";
+                if (!Directory.Exists(_strPath))
+                {
+                    Directory.CreateDirectory(_strPath);
+                }
                 _strPath = _strPath + p_strFileName + ".sql";
                 using (StreamWriter sw = new StreamWriter(_strPath, false, Encoding.UTF8))
                 {
                     sw.WriteLine(p_strSQL);
+                    return true;
                 }
             }
-            else
+            catch (Exception exp)
             {
-                Directory.CreateDirectory(_strPath);
-                SaveSQL(p_strSQL, p_strFileName);
+                CommonFunction.WriteError(exp.ToString());
+                return false;
             }
         }
 
@@ -304,9 +300,21 @@ namespace DataExport
             return CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
         }
 
-
-
-
-        
+        internal static string GetObjectBandedSQL(string _strObjectName)
+        {
+            string _strBandedSQL = "SELECT \n PATIENT_ID,\nVISIT_ID,\n ";
+            string _strSQL = string.Format(@"selct * from '{0}' where 1=0", _strObjectName);
+            DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
+            if (null==_dtObject)
+            {
+                return "目标库中无表" + _strObjectName;
+            }
+            foreach (DataColumn var in _dtObject.Columns)
+            {
+                _strBandedSQL+="\t"+ var.Caption.ToUpper()+",\n";
+            }
+            _strBandedSQL += " FROM [表名]\n WHERE ";
+            return _strBandedSQL;
+        }
     }
 }

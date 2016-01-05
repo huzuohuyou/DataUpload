@@ -15,12 +15,14 @@ namespace DataExport
     {
         public uctlRestoreManage()
         {
-            string _strExePath = Application.StartupPath + @"\MessagePlatform.exe";
-            Process.Start(_strExePath);
-            RemoteMessage.InitClient();
+            //string _strExePath = Application.StartupPath + @"\MessagePlatform.exe";
+            //Process.Start(_strExePath);
+            //RemoteMessage.InitClient();
+            
             InitializeComponent();
             DataTable _dt= GetRestorePat();
-            dataGridView1.DataSource = _dt.DefaultView;
+            if (_dt == null) { CommonFunction.WriteError("无需恢复数据"); } else { dataGridView1.DataSource = _dt.DefaultView; }
+            
         }
 
         public string GetCurrentObject()

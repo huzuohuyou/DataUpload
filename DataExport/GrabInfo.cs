@@ -472,7 +472,7 @@ namespace DataExport
                 //}
                 //数据转换2015-09-09 吴海龙
                 ConversionData.ExchangeData();
-                ExeExport();
+                //ExeExport();
             }
         }
 
@@ -562,25 +562,22 @@ namespace DataExport
         /// <returns>病人信息</returns>
         public static void GetPatientData()
         {
-            PublicVar.ExportData.Tables.Clear();
-            DataTable _dtSql = PublicVar.m_dtSQL;
+            PublicVar.successcount = 0;
+            PublicVar.falsecount = 0;
+            DataTable _dtSql = GrabInfo.GetConfigSQL();
             foreach (DataRow dr in _dtSql.Rows)
             {
-                DataTable _dtTemp = new DataTable();
                 foreach (DataRow drpat in PublicVar.m_dsPatients.Rows)
                 {
                     string _strSQL = string.Format(dr["sql"].ToString().Replace("@PATIENT_ID", drpat["PATIENT_ID"].ToString()).Replace("@VISIT_ID", drpat["VISIT_ID"].ToString()));
-                    //_dtTemp.Merge(DALUse.Query(_strSQL).Tables[0]);
-                    _dtTemp.Merge(CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR"));
-                    RemoteMessage.SendMessage("查询病人信息\n" + _strSQL);
+                    RemoteMessage.SendMessage("查询病人信息" + dr["TABLE_NAME"].ToString() + "---" + drpat["PATIENT_ID"].ToString() + "---" + drpat["VISIT_ID"].ToString());
+                    DataTable _dtOnePatOneObj = CommonFunction.OleExecuteBySQL(_strSQL, dr["TABLE_NAME"].ToString(), "EMR");
+                    _dtOnePatOneObj = ConversionData.ExchangeData(_dtOnePatOneObj);
+                    ExeExport(_dtOnePatOneObj);
+                    //SingleObjectDBExport.DoImport(_dtOnePatOneObj);
                 }
-                DataTable _dt = _dtTemp.Copy();
-                _dt.TableName = dr["TABLE_NAME"].ToString();
-                PublicVar.ExportData.Tables.Add(_dt);
             }
-            //数据转换2015-09-09 吴海龙
-            ConversionData.ExchangeData();
-            ExeExport();
+            RemoteMessage.SendMessage("导入成功:" + PublicVar.successcount + "\n导入失败:" + PublicVar.falsecount);
         }
 
         /// <summary>
@@ -630,21 +627,20 @@ namespace DataExport
         /// <summary>
         /// 执行导出
         /// </summary>
-        public static void ExeExport()
+        public static void ExeExport(DataTable p_dtOnePatInfo)
         {
             IExport ie = null;
             string _strExportType = uctlBaseConfig.GetConfig("ExportType");
             switch (_strExportType)
             {
                 case "DB":
-                    ie = new ExportDB();
-                    PublicVar.ExportParam[0] = PublicVar.ExportData;
+                    //SingleObjectDBExport.DoImport(_dtOnePatOneObj);
+                    //ie = new ExportDB();
+                    //PublicVar.ExportParam[0] = PublicVar.ExportData;
                     break;
                 case "DBF":
-                    ie = new ExportDBF();
-                    string _strDbfPath =  uctlBaseConfig.GetConfig("DbfPath");
-                    PublicVar.ExportParam[0] = _strDbfPath;
-                    PublicVar.ExportParam[1] = PublicVar.ExportData.Tables[0];
+                    //string _strDbfPath =  uctlBaseConfig.GetConfig("DbfPath");
+                    ie = new ExportDBF(p_dtOnePatInfo);
                     break;
                 case "EXCLE":
                     ie = new ExportExcel();
@@ -653,15 +649,15 @@ namespace DataExport
                     PublicVar.ExcelSource = PublicVar.ExportData.Tables[0];
                     break;
                 case "XML":
-                    ie = new ExportXml();
-                    PublicVar.ExportParam[0] = PublicVar.ExportData;
+                    ie = new FluenctExport(PublicVar.m_dsPatients);
+                    //Thread t = new Thread(fe.ExportPatsInfoForAllObj);
+                    //t.Start();
                     break;
                 default:
                     CommonFunction.WriteError("未知导出类型:" + _strExportType);
                     break;
             }
-            Thread t = new Thread(new ThreadStart(ie.Export));
-            t.Start();
+            ie.Export();
         }
 
 
@@ -675,14 +671,14 @@ namespace DataExport
             switch (_strExportType)
             {
                 case "DB":
-                    ie = new ExportDB(p_strObjectName,p_dsOnePatInfo);
-                    //PublicVar.ExportParam[0] = p_dsOnePatInfo;
+                    ie = new ExportDB();
+                    PublicVar.ExportParam[0] = p_dsOnePatInfo;
                     break;
                 case "DBF":
-                    ie = new ExportDBF();
                     string _strDbfPath = uctlBaseConfig.GetConfig("DbfPath");
-                    PublicVar.ExportParam[0] = _strDbfPath;
-                    PublicVar.ExportParam[1] = p_dsOnePatInfo;
+                    //PublicVar.ExportParam[0] = _strDbfPath;
+                    //PublicVar.ExportParam[1] = p_dsOnePatInfo;
+                    ie = new ExportDBF(p_dsOnePatInfo.Tables[0]);
                     break;
                 case "EXCLE":
                     ie = new ExportExcel();

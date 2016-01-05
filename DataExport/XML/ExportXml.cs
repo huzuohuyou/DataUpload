@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using ConfirmFileName;
 using ToolFunction;
 using DataExport.外部接口;
+using DataExport.文件接口;
 
 namespace DataExport
 {
@@ -215,26 +216,27 @@ namespace DataExport
                 }
             }
             string _strFiledName = m_strObjectName + "_" + m_strPatientId + "_" + m_strVisitId;
-            if (IsUseInterface())
+            if (EmrInfoManagement.m_bHasFile)
             {
-                UploadInterface ui = new UploadInterface();
-                ui.CallInterface(_strXml, _strFiledName);
-
-            }
-            else
-            {
-                if (SaveXML(_strXml, _strFiledName, "XmlOutPutPath"))
+                if (IsUseInterface())
                 {
-                    RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "OK");
-                    uctlRestoreManage.RemoveRecord(m_strObjectName, m_strPatientId, m_strVisitId);
+                    UploadInterface ui = new UploadInterface();
+                    ui.CallInterface(_strXml, _strFiledName);
                 }
                 else
                 {
-                    RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "FALSE");
-                    uctlRestoreManage.LogFalsePatient(m_strObjectName, m_strPatientId, m_strVisitId);
+                    if (SaveXML(_strXml, _strFiledName, "XmlOutPutPath"))
+                    {
+                        RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "OK");
+                        uctlRestoreManage.RemoveRecord(m_strObjectName, m_strPatientId, m_strVisitId);
+                    }
+                    else
+                    {
+                        RemoteMessage.SendMessage("FILE_EXPORT_RESULT:".PadRight(50, '.') + "FALSE");
+                        uctlRestoreManage.LogFalsePatient(m_strObjectName, m_strPatientId, m_strVisitId);
+                    }
                 }
             }
-           
         }
 
         public bool IsUseInterface()

@@ -145,6 +145,7 @@ namespace DataExport.文件接口
             string _strFileName = GetFileName(p_strPatientId, p_strVisitId, p_strMrClass);
             if ("" == _strFileName)
             {
+                m_bHasFile = false;
                 return "";
             }
             string _strFilePath = GetLocalFilePath(p_strPatientId, _strFileName);
@@ -362,6 +363,10 @@ namespace DataExport.文件接口
             }
             return "";
         }
+        /// <summary>
+        /// 没有文件不导出
+        /// </summary>
+        public static bool m_bHasFile = true;
 
         /// <summary>
         /// 
@@ -376,6 +381,7 @@ namespace DataExport.文件接口
             string _strFileName = GetFileName(p_strPatientId, p_strVisitId, p_strMrClass);
             if ("" == _strFileName)
             {
+                m_bHasFile = false;
                 return "";
             }
             string _strLocalPath = GetLocalFilePath(p_strPatientId, _strFileName);

@@ -31,5 +31,5 @@ using System.Resources;
 //      修订号
 //
 [assembly: AssemblyVersion("3.0.0.2")]
-[assembly: AssemblyFileVersion("4.0.0.7")]
+[assembly: AssemblyFileVersion("4.0.0.1")]
 [assembly: NeutralResourcesLanguageAttribute("")]

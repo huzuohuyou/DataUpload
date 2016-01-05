@@ -53,7 +53,7 @@ namespace DataExport
 
         private void 平台管理ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            uctlPTManage ptm = new uctlPTManage();
+            uctlDBManagement ptm = new uctlDBManagement();
             //CommonFunction.AddForm2(ptm);
             CommonFunction.AddForm3(pl_showcontains,ptm);
         }
@@ -75,7 +75,7 @@ namespace DataExport
         private void MainForm_Load(object sender, EventArgs e)
         {
             //臨時註釋123
-            EmrInfoManagement.InitStatus();
+            //EmrInfoManagement.InitStatus();
             Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             string _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
             if ("TRUE" == _strUploadFlag.ToUpper())
@@ -102,7 +102,7 @@ namespace DataExport
 
         private void button1_Click(object sender, EventArgs e)
         {
-            uctlPTManage ptm = new uctlPTManage();
+            uctlDBManagement ptm = new uctlDBManagement();
             CommonFunction.AddForm3(pl_showcontains, ptm);
         }
 
@@ -158,8 +158,8 @@ namespace DataExport
 
         private void button2_Click_2(object sender, EventArgs e)
         {
-            uctlXmlDocManage de = new uctlXmlDocManage();
-            CommonFunction.AddForm3(pl_showcontains,de);
+            uctlDBFManagement ptm = new uctlDBFManagement();
+            CommonFunction.AddForm3(pl_showcontains, ptm);
         }
 
         private void button7_Click(object sender, EventArgs e)

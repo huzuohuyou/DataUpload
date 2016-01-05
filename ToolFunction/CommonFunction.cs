@@ -1520,6 +1520,71 @@ namespace ToolFunction
         }
         #endregion
 
+        #region 文件操作 2015-01-05
 
+        /// <summary>
+        /// 复制文件
+        /// </summary>
+        /// <param name="p_strSourcePath">源文件</param>
+        /// <param name="p_strTargetPath">目标文件</param>
+        /// <param name="p_bOverWrite">是否覆盖</param>
+        /// <returns></returns>
+        public static bool CopyFile(string p_strSourcePath, string p_strTargetPath, bool p_bOverWrite)
+        {
+            try
+            {
+                String sourcePath = p_strSourcePath;
+                String targetPath = p_strTargetPath;
+                bool isrewrite = p_bOverWrite; // true=覆盖已存在的同名文件,false则反之
+                System.IO.File.Copy(sourcePath, targetPath, isrewrite);
+                return true;
+            }
+            catch (Exception exp)
+            {
+                WriteError(exp.ToString());
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取节点设置
+        /// </summary>
+        /// <param name="m_strElementName"></param>
+        /// <returns></returns>
+        public static string GetConfig(string m_strElementName)
+        {
+            //获取Configuration对象
+            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            string _strValue = string.Empty;
+            ////根据Key读取<add>元素的Value
+            try
+            {
+                _strValue = config.AppSettings.Settings[m_strElementName].Value;
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
+            return _strValue;
+        }
+
+        /// <summary>
+        /// 2015-01-05
+        /// 吴海龙
+        /// 保存配置信息
+        /// </summary>
+        /// <param name="p_strKey"></param>
+        /// <param name="p_strValue"></param>
+        public static void SaveConfig(string p_strKey, string p_strValue)
+        {
+            //获取Configuration对象
+            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            //写入<add>元素的Value
+            config.AppSettings.Settings[p_strKey].Value = p_strValue;
+            config.Save(ConfigurationSaveMode.Modified);
+            //刷新，否则程序读取的还是之前的值（可能已装入内存）
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+        }
+        #endregion
     }
 }

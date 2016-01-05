@@ -1,6 +1,6 @@
 ﻿namespace DataExport
 {
-    partial class uctlXmlDocManage
+    partial class uctlDBObjectManage
     {
         /// <summary> 
         /// 必需的设计器变量。
@@ -32,20 +32,11 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.tvList = new System.Windows.Forms.TreeView();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.TABLE_NAME = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MS = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // tvList
-            // 
-            this.tvList.Location = new System.Drawing.Point(323, 3);
-            this.tvList.Name = "tvList";
-            this.tvList.Size = new System.Drawing.Size(444, 616);
-            this.tvList.TabIndex = 0;
             // 
             // dataGridView1
             // 
@@ -79,7 +70,7 @@
             dataGridViewCellStyle4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.dataGridView1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(314, 583);
+            this.dataGridView1.Size = new System.Drawing.Size(314, 616);
             this.dataGridView1.TabIndex = 1;
             // 
             // TABLE_NAME
@@ -96,25 +87,12 @@
             this.MS.Name = "MS";
             this.MS.Width = 150;
             // 
-            // button1
-            // 
-            this.button1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(242, 592);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 24);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "打开";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // uctlXmlDocManage
+            // uctlDBObjectManage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.tvList);
-            this.Name = "uctlXmlDocManage";
+            this.Name = "uctlDBObjectManage";
             this.Size = new System.Drawing.Size(770, 622);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
@@ -123,10 +101,9 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView tvList;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn TABLE_NAME;
         private System.Windows.Forms.DataGridViewTextBoxColumn MS;
-        private System.Windows.Forms.Button button1;
+
     }
 }

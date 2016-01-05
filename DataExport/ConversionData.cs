@@ -60,35 +60,29 @@ namespace DataExport
         /// 吴海龙
         /// </summary>
         /// <param name="_dtDictDetail"></param>
-        public static DataSet ExchangeData(DataSet p_dsOnePatInfo)
+        public static DataTable ExchangeData(DataTable p_dtOnePatInfo)
         {
-            if (p_dsOnePatInfo == null)
+            if (p_dtOnePatInfo == null)
             {
                 CommonFunction.WriteError("无病人信息.ExchangeData失败");
                 return null;
             }
             string _strSQL = string.Format("select FIELD_NAME,LOCAL_VALUE,TARGET_VALUE FROM pt_comparison ");
             DataTable _dtDict = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            foreach (DataTable _dtOnePatInfo in p_dsOnePatInfo.Tables)
+            foreach (DataColumn _dcColumn in p_dtOnePatInfo.Columns)
             {
-                foreach (DataColumn _dcColumn in _dtOnePatInfo.Columns)
+                DataRow _drTemp = p_dtOnePatInfo.Rows[0];
+                DataRow[] _arrDataRow = _dtDict.Select("FIELD_NAME = '" + _dcColumn.Caption + "'");
+                foreach (DataRow _drDict in _arrDataRow)
                 {
-                    foreach (DataRow _drTemp in _dtOnePatInfo.Rows)
+                    if (_drTemp[_dcColumn].ToString() == _drDict["LOCAL_VALUE"].ToString())
                     {
-                        DataRow[] _arrDataRow = _dtDict.Select("FIELD_NAME = '" + _dcColumn.Caption + "'");
-                        foreach (DataRow _drDict in _arrDataRow)
-                        {
-                            if (_drTemp[_dcColumn].ToString() == _drDict["LOCAL_VALUE"].ToString())
-                            {
-                                RemoteMessage.SendMessage("正在转换字典[" + _dcColumn.Caption.PadRight(30, '.') + "]:" + _drTemp[_dcColumn].ToString().PadRight(5, '　') + _drDict["TARGET_VALUE"].ToString());
-                                _drTemp[_dcColumn] = _drDict["TARGET_VALUE"].ToString();
-                            }
-                        }
+                        RemoteMessage.SendMessage("正在转换字典[" + _dcColumn.Caption.PadRight(30, '.') + "]:" + _drTemp[_dcColumn].ToString().PadRight(5, '　') + _drDict["TARGET_VALUE"].ToString());
+                        _drTemp[_dcColumn] = _drDict["TARGET_VALUE"].ToString();
                     }
                 }
             }
-           
-            return p_dsOnePatInfo;
+            return p_dtOnePatInfo;
         }
 
       

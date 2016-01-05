@@ -94,9 +94,7 @@ namespace DataExport
                     PublicVar.ExportParam[0] = m_dsAllPatsInfo;                    
                     break;
                 case PublicVar.CExportDBF:
-                    ie = new ExportDBF();
-                    PublicVar.ExportParam[0] = _strDbfPath;
-                    PublicVar.ExportParam[1] = m_dsAllPatsInfo;
+                    ie = new ExportDBF(m_dsAllPatsInfo.Tables[0]);
                     break;
                 case PublicVar.CExportExcel:
                     ie = new ExportExcel();

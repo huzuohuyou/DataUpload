@@ -62,7 +62,7 @@ namespace DataExport
 
         public string GetCurrentChapter()
         {
-            if (dataGridView4.CurrentRow.Cells["chapter_name"].Value==null)
+            if (dataGridView4.CurrentRow==null)
             {
                 return "";
             }
@@ -107,9 +107,9 @@ namespace DataExport
             if (DialogResult.Yes == MessageBox.Show("确定删除此章节字典", "Message", MessageBoxButtons.YesNo))
             {
                 string _strChapterName = GetCurrentChapter();
-                string _strSQL = string.Format(@"delete from pt_chapter where field_name = '{0}'", _strChapterName);
+                string _strSQL = string.Format(@"delete from PT_COMPARISON where field_name = '{0}'", _strChapterName);
                 CommonFunction.OleExecuteNonQuery(_strSQL, PublicVar.m_strEmrConnection);
-                dataGridView3.DataSource = null;
+                InitData();
             }
         }
 

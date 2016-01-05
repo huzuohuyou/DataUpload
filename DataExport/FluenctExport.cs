@@ -7,7 +7,7 @@ using ToolFunction;
 
 namespace DataExport
 {
-    public class FluenctExport
+    public class FluenctExport:IExport
     {
         string m_strObjectName = string.Empty;
         DataTable m_dtPats = new DataTable();
@@ -76,8 +76,8 @@ namespace DataExport
         {
             GrabInfo.InitPatDBInfo(p_strPatientId, p_strVisitId);
             DataSet _dsOnePatInfo = GrabInfo.GrabPatientInfo(p_strObjectName, p_strPatientId, p_strVisitId);
-            _dsOnePatInfo = ConversionData.ExchangeData(_dsOnePatInfo);
-            GrabInfo.ExeExport(_dsOnePatInfo, p_strObjectName, p_strPatientId, p_strVisitId);
+            DataTable _dt   = ConversionData.ExchangeData(_dsOnePatInfo.Tables[0]);
+            GrabInfo.ExeExport(_dt.DataSet, p_strObjectName, p_strPatientId, p_strVisitId);
         }
 
 
@@ -141,5 +141,14 @@ namespace DataExport
         }
 
 
+
+        #region IExport ≥…‘±
+
+        public void Export()
+        {
+            ExportPatsInfoForAllObj();
+        }
+
+        #endregion
     }
 }

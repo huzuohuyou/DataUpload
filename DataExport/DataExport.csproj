@@ -95,28 +95,36 @@
   <ItemGroup>
     <Compile Include="AutoUpload.cs" />
     <Compile Include="ConversionData.cs" />
+    <Compile Include="Database\SingleObjectDBExport.cs" />
     <Compile Include="DBTemplet.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FluenctExport.cs" />
     <Compile Include="GrabInfo.cs" />
+    <Compile Include="PatientIndex.cs" />
     <Compile Include="uctlRestoreManage.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="uctlRestoreManage.Designer.cs">
       <DependentUpon>uctlRestoreManage.cs</DependentUpon>
     </Compile>
-    <Compile Include="uctlXmlDocManage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="uctlXmlDocManage.Designer.cs">
-      <DependentUpon>uctlXmlDocManage.cs</DependentUpon>
-    </Compile>
     <Compile Include="uctlXmlStrManage.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="uctlXmlStrManage.Designer.cs">
       <DependentUpon>uctlXmlStrManage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="XMLObjectManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="XMLObjectManagement.Designer.cs">
+      <DependentUpon>XMLObjectManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="uctlDBFManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlDBFManagement.Designer.cs">
+      <DependentUpon>uctlDBFManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="外部接口\CallInterface.cs" />
     <Compile Include="外部接口\EmrInfo.cs" />
@@ -178,16 +186,20 @@
       <SubType>Designer</SubType>
       <DependentUpon>uctlDoExport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="uctlPTManage.resx">
+    <EmbeddedResource Include="uctlDBManagement.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>uctlPTManage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="uctlXmlDocManage.resx">
-      <DependentUpon>uctlXmlDocManage.cs</DependentUpon>
-      <SubType>Designer</SubType>
+      <DependentUpon>uctlDBManagement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="uctlXmlStrManage.resx">
       <DependentUpon>uctlXmlStrManage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="XMLObjectManagement.resx">
+      <DependentUpon>XMLObjectManagement.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="uctlDBFManagement.resx">
+      <DependentUpon>uctlDBFManagement.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -223,11 +235,11 @@
     <Compile Include="uctlDoExport.Designer.cs">
       <DependentUpon>uctlDoExport.cs</DependentUpon>
     </Compile>
-    <Compile Include="uctlPTManage.cs">
+    <Compile Include="uctlDBManagement.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="uctlPTManage.Designer.cs">
-      <DependentUpon>uctlPTManage.cs</DependentUpon>
+    <Compile Include="uctlDBManagement.Designer.cs">
+      <DependentUpon>uctlDBManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Web References\UploadMrInfoService\Reference.cs">
       <AutoGen>True</AutoGen>

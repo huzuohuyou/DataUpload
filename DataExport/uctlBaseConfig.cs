@@ -63,6 +63,23 @@ namespace DataExport
         }
 
         /// <summary>
+        /// 2015-01-05
+        /// 吴海龙
+        /// 保存配置信息
+        /// </summary>
+        /// <param name="p_strKey"></param>
+        /// <param name="p_strValue"></param>
+        public static void SaveConfig(string p_strKey,string p_strValue) {
+            //获取Configuration对象
+            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            //写入<add>元素的Value
+            config.AppSettings.Settings[p_strKey].Value = p_strValue;
+            config.Save(ConfigurationSaveMode.Modified);
+            //刷新，否则程序读取的还是之前的值（可能已装入内存）
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="p_strKey"></param>
@@ -92,6 +109,7 @@ namespace DataExport
         {
             string _strExportType = string.Empty;
             string _strDbfPath = string.Empty;
+            string _strDbfOutPutDir = string.Empty;
             string _strExcelPath = string.Empty;
             string _strXmlPath = string.Empty;
             string _strTargetConnectionString = string.Empty;
@@ -105,6 +123,7 @@ namespace DataExport
             InitValue("ExportType", "XML");
             InitValue("XmlOutPutPath", "E:\\");
             InitValue("DbfPath", "123");
+            InitValue("DbfOutPutDir", "E:\\");
             InitValue("ExcelPath", "123");
             InitValue("XmlPath", "123");
             InitValue("UploadFlag", "FALSE");
@@ -115,6 +134,7 @@ namespace DataExport
             _strDBType = config.AppSettings.Settings["DBType"].Value;
             _strTargetDBType = config.AppSettings.Settings["TARGETDBTYPE"].Value;
             _strDbfPath = config.AppSettings.Settings["DbfPath"].Value;
+            _strDbfOutPutDir= config.AppSettings.Settings["DbfOutPutDir"].Value;
             _strExcelPath = config.AppSettings.Settings["ExcelPath"].Value;
             _strXmlPath = config.AppSettings.Settings["XmlPath"].Value;
             _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
@@ -138,6 +158,7 @@ namespace DataExport
                     //rb_dbf.Checked = true;
                     tabControl1.SelectedIndex = 2;
                     txt_dbf.Text = _strDbfPath;
+                    textBox5.Text = _strDbfOutPutDir;
                     break;
                 case m_strXML:
                     //rb_xml.Checked = true;
@@ -271,21 +292,27 @@ namespace DataExport
 
         private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
         {
+           
             if (comboBox5.Text == "DB")
             {
                 tabControl1.SelectedIndex = 0;
+                comboBox2.Text = GetConfig("TARGETDBTYPE");
             }
             else if (comboBox5.Text == "DBF")
             {
                 tabControl1.SelectedIndex = 2;
+                txt_dbf.Text = GetConfig("DbfPath");
+                textBox5.Text = GetConfig("DbfOutPutDir");
             }
             else if (comboBox5.Text == "XML")
             {
-                tabControl1.SelectedIndex = 3;
+                 tabControl1.SelectedIndex = 3;
+                 txt_xmlsavepath.Text = GetConfig("XmlOutPutPath"); 
             }
             else if (comboBox5.Text == "EXCEL")
             {
-                tabControl1.SelectedIndex = 1;
+                 tabControl1.SelectedIndex = 1;
+                 txt_excel.Text = txt_xmlsavepath.Text = GetConfig("ExcelPath"); 
             }
         }
 
@@ -312,6 +339,34 @@ namespace DataExport
                 //}
             }
             uctlMessageBox.frmDisappearShow("语句执行完成");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ofd_path.ShowDialog();
+            SaveConfig("DbfPath", ofd_path.FileName);
+            txt_dbf.Text = GetConfig("DbfPath");
+        }
+
+        private void button12_Click_1(object sender, EventArgs e)
+        {
+            fbd_file.ShowDialog();
+            SaveConfig("DbfOutPutDir", fbd_file.SelectedPath);
+            textBox5.Text = GetConfig("DbfOutPutDir");
+        }
+
+        private void tabControl1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("请通过");
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboBox2.Text = GetConfig("TARGETDBTYPE");
+            txt_dbf.Text = GetConfig("DbfPath");
+            textBox5.Text = GetConfig("DbfOutPutDir");
+            txt_xmlsavepath.Text = GetConfig("XmlOutPutPath");
+            txt_excel.Text = txt_xmlsavepath.Text = GetConfig("ExcelPath");
         }
 
 

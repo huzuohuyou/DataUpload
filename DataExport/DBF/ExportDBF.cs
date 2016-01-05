@@ -37,7 +37,14 @@ namespace DataExport
         private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
         [DllImport("kernel32")]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
+        private string m_strDbfTemplet = string.Empty;
+        private DataTable m_dtSource = null;
 
+        public ExportDBF( DataTable p_dtSource)
+        {
+            //m_strDbfTemplet = p_strTempletPath;
+            m_dtSource = p_dtSource;
+        }
         //DALUseLocal DALUseLocal = new DALUseLocal();
         string strErrorPatInf = "";
 
@@ -437,17 +444,24 @@ namespace DataExport
             string strSqlValues = "";
             foreach (string s in strColumn.Split(','))
             {
-                if (dt.Columns[s].DataType.Name == "String") //拼接字符串类型
+                if (dt.Columns.Contains(s))
                 {
-                    strSqlValues += "'" + drsource[s].ToString() + "',";
-                }
-                else if (dt.Columns[s].DataType.Name.Contains("Int"))//拼接数字类型
-                {
-                    strSqlValues += drsource[s].ToString() + ",";
-                }
-                else if (dt.Columns[s].DataType.Name == "DateTime")//拼接日期类型
-                {
-                    strSqlValues += GetDate(drsource[s].ToString()) + ",";
+                    if (dt.Columns[s].DataType.Name == "String") //拼接字符串类型
+                    {
+                        strSqlValues += "'" + drsource[s].ToString() + "',";
+                    }
+                    else if (dt.Columns[s].DataType.Name.Contains("Int"))//拼接数字类型
+                    {
+                        strSqlValues += drsource[s].ToString() + ",";
+                    }
+                    else if (dt.Columns[s].DataType.Name == "DateTime")//拼接日期类型
+                    {
+                        strSqlValues += GetDate(drsource[s].ToString()) + ",";
+                    }
+                    else
+                    {
+                        strSqlValues += "null,";
+                    }
                 }
                 else
                 {
@@ -489,6 +503,9 @@ namespace DataExport
             }
             return strSqlValues.Trim(',');
         }
+
+        
+
         /// <summary>
         /// 2015-01-14 吴海龙 向dbf文件插入数据 
         /// </summary>
@@ -499,32 +516,37 @@ namespace DataExport
         {
             try
             {
-                string strColumn = ReColumnStr(strFileName);//存放要插入的字段名
-                DataTable dtColumn = ReadDBF(strFileName);//存放要插入的字段名
-                int successcount = 0,falsecount = 0;
+                string _strTarget = CommonFunction.GetConfig("DbfOutPutDir")+DateTime.Now.ToString("yyyy_MM_dd")+".dbf";
+                CommonFunction.CopyFile(strFileName, _strTarget,false);
+                string strColumn = ReColumnStr(_strTarget);//存放要插入的字段名
+                DataTable dtColumn = ReadDBF(_strTarget);//存放要插入的字段名
+                //PublicVar.successcount = 0;
+                //PublicVar.falsecount = 0;
                 CommonFunction cf = new CommonFunction();
-                cf.WaitingThreadStart();
+                //cf.WaitingThreadStart();
                 foreach (DataRow dr in dt.Rows)
                 {
                     string strsql = "insert into TableName( ";//sql的开头
                     strsql += strColumn;
                     strsql += ") values (";
                     //strsql += ReturnStrValues(dr, dtColumn);
-                    strsql += ReturnStrValues(dr);
+                    strsql += ReturnStrValues(dr, strColumn);
                     strsql += ")";
-                    if (WriteDBF(strFileName, strsql))
+                    if (WriteDBF(_strTarget, strsql))
                     {
-                        successcount++;
+                        PublicVar.successcount++;
+                        RemoteMessage.SendMessage("插入成功...");
                     }
                     else
                     {
-                        falsecount++;
+                        PublicVar.falsecount++;
+                        RemoteMessage.SendMessage("插入失败...");
                     }
                 }
-                cf.WaitingThreadStop();
-                string mess = "" + DateTime.Now.ToString() + "数据导出完成\n导出成功" + successcount.ToString() + "条； \n 导出失败" + falsecount.ToString() + "条； \n 详情信息查看Errorlog.txt!";
-                CommonFunction.WriteError(mess + "\n");
-                ToolFunction.uctlMessageBox.frmDisappearShow(mess);
+                
+                //string mess = "" + DateTime.Now.ToString() + "数据导出完成\n导出成功" + successcount.ToString() + "条； \n 导出失败" + falsecount.ToString() + "条； \n 详情信息查看Errorlog.txt!";
+                //CommonFunction.WriteError(mess + "\n");
+                //ToolFunction.uctlMessageBox.frmDisappearShow(mess);
             }
             catch (Exception ex)
             {
@@ -614,14 +636,32 @@ namespace DataExport
                 }
             }
         }
+
+        /// <summary>
+        /// 返回dbf路径
+        /// </summary>
+        /// <param name="p_strObjectName"></param>
+        /// <returns></returns>
+        public string GetDbfTempletPath(string p_strObjectName) {
+            string _strSQL = string.Format("select * from PT_TABLES_DICT where TABLE_NAME ='{0}' ", p_strObjectName);
+            DataTable _dtobj = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            if (_dtobj!=null&&_dtobj.Rows.Count>0)
+            {
+                return _dtobj.Rows[0]["ms"].ToString();
+            }
+            return "";
+        }
+
         #region IExport 成员
 
         public void Export()
         {
-            CommonFunction cf = new CommonFunction();
-            string dbfpath = PublicVar.ExportParam[0].ToString();
-            DataTable dt = (DataTable)PublicVar.ExportParam[1];
-            InsertDBF(dt, dbfpath);
+            //CommonFunction cf = new CommonFunction();
+            //string dbfpath = PublicVar.ExportParam[0].ToString();
+            //DataTable dt = (DataTable)PublicVar.ExportParam[1];
+            //InsertDBF(dt, dbfpath);
+            string _strDbfTempletPath = GetDbfTempletPath(m_dtSource.TableName);
+            InsertDBF(m_dtSource, _strDbfTempletPath);
         }
 
         #endregion

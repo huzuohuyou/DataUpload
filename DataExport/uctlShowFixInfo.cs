@@ -46,7 +46,7 @@ namespace ConfirmFileName
             }
             m_ivalidate.ValidateData(p_strTableName);
             dataGridView2.DataSource = m_dtSource.DefaultView;
-            textBox2.Text ="警告:SQL中未找到到"+ m_strWarning;
+            textBox2.Text = m_strWarning;
         }
 
 

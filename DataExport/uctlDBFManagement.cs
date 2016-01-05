@@ -13,9 +13,9 @@ using System.IO;
 using System.Diagnostics;
 namespace DataExport
 {
-    public partial class uctlPTManage : UserControl
+    public partial class uctlDBFManagement : UserControl
     {
-        public uctlPTManage()
+        public uctlDBFManagement()
         {
             InitializeComponent();
             InitData();
@@ -83,7 +83,7 @@ namespace DataExport
             string _strSQL = string.Empty;
             DataGridViewRow var = dataGridView1.CurrentRow;
             string _strTableName = var.Cells["TABLE_NAME"].Value.ToString();
-            string _strExportFlag = var.Cells["EXPORTFLAG"].Value.ToString();
+            string _strExportFlag = var.Cells["EXPORTFLAG"].Value.ToString().ToUpper();
             string _strMs = var.Cells["MS"].Value.ToString();
             //string _strSQLValue = rtb_sql.Text.Trim();
             //if (_strSQLValue=="")
@@ -129,10 +129,19 @@ namespace DataExport
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            //2015-11-06 吴海龙 改版 将sql绑定方式改为 章节绑定方式简化软件使用难度
-            //string _strSQLValue = ExportDB.GetSQL(dataGridView1.CurrentRow.Cells["TABLE_NAME"].Value.ToString());
-            //rtb_sql.Text = _strSQLValue;
-            dataGridView2.DataSource = ExportDB.GetChapter(GetCurrentObjectName());
+            if (dataGridView1.CurrentCell.ColumnIndex == 0)
+            {
+                string _strSQLValue = ExportDB.GetSQL(dataGridView1.CurrentRow.Cells["TABLE_NAME"].Value.ToString());
+                rtb_sql.Text = _strSQLValue;
+            }
+            if (dataGridView1.CurrentCell.ColumnIndex == 1)
+            {
+                openFileDialog1.ShowDialog();
+                string _strSourceFile = openFileDialog1.FileName;
+                string _strTargetFile = Application.StartupPath + "\\dbf\\" + openFileDialog1.SafeFileName;
+                CommonFunction.CopyFile(_strSourceFile, _strTargetFile,true);
+                dataGridView1.CurrentCell.Value = _strTargetFile;
+            }
         }
    
 
@@ -181,7 +190,7 @@ namespace DataExport
             string _strTableName = _drTemp.Cells["TABLE_NAME"].Value.ToString();
             string _strMs = _drTemp.Cells["MS"].Value.ToString();
             DataTable _dt = (DataTable)dataGridView1.DataSource;
-            ShowFixInfo bs = new ShowFixInfo(_strTableName,_strMs);
+            ShowFixInfo bs = new ShowFixInfo(_strTableName, _strMs);
             CommonFunction.AddForm2(bs);
         }
 
@@ -207,11 +216,15 @@ namespace DataExport
 
         private void button6_Click(object sender, EventArgs e)
         {
-            SaveChapter();
+            DataGridViewRow var = dataGridView1.CurrentRow;
+            string _strTableName = var.Cells["TABLE_NAME"].Value.ToString();
+            string _strSQLValue = rtb_sql.Text.Trim();
+            ExportDB.SaveSQL(_strSQLValue, _strTableName);
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
+            string _strBandedSQL = string.Empty;
             DataGridViewRow _drObject = dataGridView1.CurrentRow;
             string _strExportType = uctlBaseConfig.GetConfig("ExportType");
             string _strObjectName = _drObject.Cells["TABLE_NAME"].Value.ToString();
@@ -223,7 +236,7 @@ namespace DataExport
                 switch (_strExportType)
                 {
                     case "DB":
-                        _dtObject = ExportDB.GetObject(_strObjectName);
+                        _strBandedSQL = ExportDB.GetObjectBandedSQL(_strObjectName);
                         break;
                     case "XML":
                         _dtObject = ExportXml.GetObject(_strObjectName);
@@ -235,7 +248,8 @@ namespace DataExport
                     default:
                         break;
                 }
-                SycnChapterData(_strObjectName, _dtObject);
+                rtb_sql.Text = _strBandedSQL;
+                //SycnChapterData(_strObjectName, _dtObject);
                 InitData();
             }
         }
@@ -304,6 +318,15 @@ namespace DataExport
                 }
                 
             }
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (dataGridView1.CurrentCell.ColumnIndex==1)
+            //{
+            //    openFileDialog1.ShowDialog();
+            //    dataGridView1.CurrentCell.Value = openFileDialog1.FileName;
+            //}
         }
 
 
