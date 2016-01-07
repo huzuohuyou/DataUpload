@@ -84,6 +84,10 @@ namespace DataExport
             DataGridViewRow var = dataGridView1.CurrentRow;
             string _strTableName = var.Cells["TABLE_NAME"].Value.ToString();
             string _strExportFlag = var.Cells["EXPORTFLAG"].Value.ToString().ToUpper();
+            if (_strExportFlag!="TRUE")
+            {
+                _strExportFlag = "FALSE";
+            }
             string _strMs = var.Cells["MS"].Value.ToString();
             //string _strSQLValue = rtb_sql.Text.Trim();
             //if (_strSQLValue=="")

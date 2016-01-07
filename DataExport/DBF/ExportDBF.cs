@@ -76,7 +76,7 @@ namespace DataExport
             }
             catch (Exception ex)
             {
-                CommonFunction.WriteError(ex.ToString());
+                CommonFunction.WriteError(ex.ToString() + "\nSQL:" + strSql);
                 return false;
             }
             return false;
@@ -448,7 +448,12 @@ namespace DataExport
                 {
                     if (dt.Columns[s].DataType.Name == "String") //拼接字符串类型
                     {
-                        strSqlValues += "'" + drsource[s].ToString() + "',";
+                        string _strTemp = drsource[s].ToString();
+                        if (_strTemp.Contains("'"))
+                        {
+                            _strTemp = _strTemp.Replace("'", "''");
+                        }
+                        strSqlValues += "'" + _strTemp + "',";
                     }
                     else if (dt.Columns[s].DataType.Name.Contains("Int"))//拼接数字类型
                     {
@@ -471,39 +476,71 @@ namespace DataExport
             return strSqlValues.Trim(','); ;
         }
 
+
         /// <summary>
-        /// 2015-01-15 吴海龙 根据【目标】列的数据类型，返回拼接values部分的字符串
+        /// 2015-01-15 吴海龙 根据【本地】列的数据类型，返回拼接values部分的字符串
         /// </summary>
         /// <param name="drsource">目标行</param>
-        /// <param name="dt">目标表列结构</param>
+        /// <param name="strColumn">列名</param>
         /// <returns>拼接完成的字符串</returns>
-        public string ReturnStrValues(DataRow drsource, DataTable dtsource)
+        public string ReturnStrValues(DataRow drsource, DataTable p_dtDbf)
         {
             DataTable dt = drsource.Table;
             string strSqlValues = "";
-            foreach (DataColumn s in dtsource.Columns)
+            foreach (DataColumn _dc in p_dtDbf.Columns)
             {
-                string columnName = s.ColumnName.ToUpper();
-                if (s.DataType.Name == "String") //拼接字符串类型
+                if (dt.Columns.Contains(_dc.ColumnName))
                 {
-                    strSqlValues += "'" + drsource[columnName].ToString() + "',";
-                }
-                else if (s.DataType.Name.Contains("Int"))//拼接数字类型
-                {
-                    strSqlValues += drsource[columnName].ToString() + ",";
-                }
-                else if (s.DataType.Name == "DateTime")//拼接日期类型
-                {
-                    strSqlValues += GetDate(drsource[columnName].ToString()) + ",";
+                    string _strTemp = drsource[_dc.ColumnName.ToUpper()].ToString();
+                    if (_dc.DataType.Name == "String") //拼接字符串类型
+                    {
+                        if (_strTemp != null && _strTemp != "")
+                        {
+                            strSqlValues += "'" + _strTemp + "',";
+                        }
+                        else
+                        {
+                            strSqlValues += "null,";
+                        }
+                    }
+                    else if (_dc.DataType.Name.Contains("Int") || _dc.DataType.Name.Contains("Decimal") || _dc.DataType.Name.Contains("Double"))//拼接数字类型
+                    {
+                        if (_strTemp != null && _strTemp != "")
+                        {
+                            strSqlValues += drsource[_dc].ToString() + ",";
+                        }
+                        else
+                        {
+                            strSqlValues += "null,";
+                        }
+
+                    }
+                    else if (_dc.DataType.Name == "DateTime")//拼接日期类型
+                    {
+                        if (_strTemp != null && _strTemp != "")
+                        {
+                            strSqlValues += GetDate(drsource[_dc].ToString()) + ",";
+                        }
+                        else
+                        {
+                            strSqlValues += GetDate("1949-01-01") + ",";
+                            //strSqlValues += "1949-01-01,";
+                        }
+                    }
+                    else
+                    {
+                        string _s = _dc.DataType.Name;
+                        strSqlValues += "null,";
+                    }
                 }
                 else
                 {
                     strSqlValues += "null,";
                 }
             }
-            return strSqlValues.Trim(',');
+            int _p = strSqlValues.Trim(',').Split(',').Length;
+            return strSqlValues.Trim(','); ;
         }
-
         
 
         /// <summary>
@@ -516,7 +553,8 @@ namespace DataExport
         {
             try
             {
-                string _strTarget = CommonFunction.GetConfig("DbfOutPutDir")+DateTime.Now.ToString("yyyy_MM_dd")+".dbf";
+                string strName = strFileName.Substring(strFileName.LastIndexOf('\\') + 1);
+                string _strTarget = CommonFunction.GetConfig("DbfOutPutDir") + "\\" + strName;
                 CommonFunction.CopyFile(strFileName, _strTarget,false);
                 string strColumn = ReColumnStr(_strTarget);//存放要插入的字段名
                 DataTable dtColumn = ReadDBF(_strTarget);//存放要插入的字段名
@@ -529,8 +567,8 @@ namespace DataExport
                     string strsql = "insert into TableName( ";//sql的开头
                     strsql += strColumn;
                     strsql += ") values (";
-                    //strsql += ReturnStrValues(dr, dtColumn);
-                    strsql += ReturnStrValues(dr, strColumn);
+                    strsql += ReturnStrValues(dr, dtColumn);
+                    //strsql += ReturnStrValues(dr, strColumn);
                     strsql += ")";
                     if (WriteDBF(_strTarget, strsql))
                     {
@@ -569,7 +607,7 @@ namespace DataExport
                 return "";
             }
             DateTime dt = Convert.ToDateTime(strDate);
-            return "DateTime(" + dt.Year.ToString() + "," + dt.Month.ToString() + "," + dt.Day.ToString() + "," + dt.Hour.ToString() + "," + dt.Minute + "," + dt.Second + ")";
+            return "DateTime(" + dt.Year.ToString() + "," + dt.Month.ToString().PadLeft(2, '0') + "," + dt.Day.ToString().PadLeft(2, '0') + ")";
         }
         #endregion
 
