@@ -882,7 +882,7 @@ namespace ToolFunction
         public static string GetExcelConnectstring(string excelPath, bool header, ExcelType eType, IMEXType imex)
         {
             if (!File.Exists(excelPath))
-                throw new FileNotFoundException("Excel路径不存在!");
+                CommonFunction.WriteError("Excel路径不存在!");
 
             string connectstring = string.Empty;
 

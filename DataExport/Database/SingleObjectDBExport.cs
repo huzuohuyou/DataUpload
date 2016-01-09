@@ -16,13 +16,18 @@ namespace DataExport
         public DataSet m_dsSource = null;
         public static string m_strDbType = ConfigurationManager.AppSettings["DBTYPE"].ToUpper();
         public static string m_strTargetDBType = ConfigurationManager.AppSettings["TARGETDBTYPE"].ToUpper();
-        public System.Data.DataTable m_dtSource = null;
-        public System.Data.DataTable m_dtColumns = null;
+        public DataTable m_dtSource = null;
+        public DataTable m_dtColumns = null;
 
         public SingleObjectDBExport(string p_strTableName, DataSet p_dsSource)
         {
             m_strTableName = p_strTableName;
             m_dsSource = p_dsSource;
+        }
+
+        public SingleObjectDBExport(DataTable p_dtSource)
+        {
+            m_dtSource = p_dtSource;
         }
 
         /// <summary>
@@ -267,16 +272,8 @@ namespace DataExport
 
         public void Export()
         {
-            //m_strTableName = p_dtPatObj.TableName;
-            //m_strColumns = CombineColumns(m_strTableName);
-            //foreach (DataRow drValue in p_dtPatObj.Rows)
-            //{
-            //    string m_strValues = CombineValues(drValue);
-            //    if (!ExeCuteSQL(m_strTableName, m_strColumns, m_strValues))
-            //    {
-            //        WritLog();
-            //    }
-            //}
+            DoImport(m_dtSource);
+           
         }
 
         #endregion

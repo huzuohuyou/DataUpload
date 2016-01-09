@@ -573,8 +573,7 @@ namespace DataExport
                     RemoteMessage.SendMessage("查询病人信息" + dr["TABLE_NAME"].ToString() + "---" + drpat["PATIENT_ID"].ToString() + "---" + drpat["VISIT_ID"].ToString());
                     DataTable _dtOnePatOneObj = CommonFunction.OleExecuteBySQL(_strSQL, dr["TABLE_NAME"].ToString(), "EMR");
                     _dtOnePatOneObj = ConversionData.ExchangeData(_dtOnePatOneObj);
-                    ExeExport(_dtOnePatOneObj);
-                    //SingleObjectDBExport.DoImport(_dtOnePatOneObj);
+                    ExeExport(_dtOnePatOneObj);                   
                 }
             }
             RemoteMessage.SendMessage("导入成功:" + PublicVar.successcount + "\n导入失败:" + PublicVar.falsecount);
@@ -634,12 +633,9 @@ namespace DataExport
             switch (_strExportType)
             {
                 case "DB":
-                    //SingleObjectDBExport.DoImport(_dtOnePatOneObj);
-                    //ie = new ExportDB();
-                    //PublicVar.ExportParam[0] = PublicVar.ExportData;
+                    ie = new SingleObjectDBExport(p_dtOnePatInfo);
                     break;
                 case "DBF":
-                    //string _strDbfPath =  uctlBaseConfig.GetConfig("DbfPath");
                     ie = new ExportDBF(p_dtOnePatInfo);
                     break;
                 case "EXCLE":
@@ -650,8 +646,6 @@ namespace DataExport
                     break;
                 case "XML":
                     ie = new FluenctExport(PublicVar.m_dsPatients);
-                    //Thread t = new Thread(fe.ExportPatsInfoForAllObj);
-                    //t.Start();
                     break;
                 default:
                     CommonFunction.WriteError("未知导出类型:" + _strExportType);

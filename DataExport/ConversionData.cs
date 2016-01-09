@@ -72,10 +72,10 @@ namespace DataExport
             foreach (DataColumn _dcColumn in p_dtOnePatInfo.Columns)
             {
                 DataRow _drTemp = p_dtOnePatInfo.Rows[0];
-                DataRow[] _arrDataRow = _dtDict.Select("FIELD_NAME = '" + _dcColumn.Caption + "'");
+                DataRow[] _arrDataRow = _dtDict.Select("FIELD_NAME = '" + _dcColumn.Caption.ToUpper() + "'");
                 foreach (DataRow _drDict in _arrDataRow)
                 {
-                    if (_drTemp[_dcColumn].ToString() == _drDict["LOCAL_VALUE"].ToString())
+                    if (_drTemp[_dcColumn].ToString().Trim() == _drDict["LOCAL_VALUE"].ToString().Trim())
                     {
                         RemoteMessage.SendMessage("ÕýÔÚ×ª»»×Öµä[" + _dcColumn.Caption.PadRight(30, '.') + "]:" + _drTemp[_dcColumn].ToString().PadRight(5, '¡¡') + _drDict["TARGET_VALUE"].ToString());
                         _drTemp[_dcColumn] = _drDict["TARGET_VALUE"].ToString();

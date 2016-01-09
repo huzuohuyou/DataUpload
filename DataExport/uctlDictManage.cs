@@ -35,7 +35,7 @@ namespace DataExport
             string _strSQL = string.Empty;
             if (m_dsExcel.Tables[0].Rows.Count > 0)
             {
-                _strSQL = string.Format("delete PT_COMPARISON where FIELD_NAME = '{0}'", m_dsExcel.Tables[0].Rows[0]["FIELD_NAME"].ToString());
+                _strSQL = string.Format("delete PT_COMPARISON ");
                 CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
                 progressBar1.Visible = true;
                 progressBar1.Value = 0;
@@ -163,6 +163,11 @@ namespace DataExport
         private void dataGridView4_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             InitDict();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            InitData();
         }
 
 

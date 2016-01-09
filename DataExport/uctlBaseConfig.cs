@@ -107,68 +107,42 @@ namespace DataExport
 
         public void InitData()
         {
-            string _strExportType = string.Empty;
-            string _strDbfPath = string.Empty;
-            string _strDbfOutPutDir = string.Empty;
-            string _strExcelPath = string.Empty;
-            string _strXmlPath = string.Empty;
-            string _strTargetConnectionString = string.Empty;
-            string _strUploadFlag = string.Empty;
-            string _strDBType = string.Empty;
-            string _strTargetDBType = string.Empty;
-            string _strXmlOutputPath = string.Empty;
-            string _strTimeKind = string.Empty;
-            string _strUseInterface = string.Empty;
-            string _strUrl = string.Empty;
-            InitValue("ExportType", "XML");
-            InitValue("XmlOutPutPath", "E:\\");
-            InitValue("DbfPath", "123");
-            InitValue("DbfOutPutDir", "E:\\");
-            InitValue("ExcelPath", "123");
-            InitValue("XmlPath", "123");
-            InitValue("UploadFlag", "FALSE");
-            InitValue("UseInterface", "FALSE");
-            InitValue("WebServiceUrl", "http://127.0.0.1/Service.asmx");
-            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            _strExportType = config.AppSettings.Settings["ExportType"].Value;
-            _strDBType = config.AppSettings.Settings["DBType"].Value;
-            _strTargetDBType = config.AppSettings.Settings["TARGETDBTYPE"].Value;
-            _strDbfPath = config.AppSettings.Settings["DbfPath"].Value;
-            _strDbfOutPutDir= config.AppSettings.Settings["DbfOutPutDir"].Value;
-            _strExcelPath = config.AppSettings.Settings["ExcelPath"].Value;
-            _strXmlPath = config.AppSettings.Settings["XmlPath"].Value;
-            _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
-            _strXmlOutputPath = config.AppSettings.Settings["XmlOutputPath"].Value;
-            _strTimeKind = config.AppSettings.Settings["TimeKind"].Value;
-            _strUseInterface = config.AppSettings.Settings["UseInterface"].Value;
-            _strUrl = config.AppSettings.Settings["WebServiceUrl"].Value;
+            string _strExportType = GetConfig("ExportType");
+            string _strDbfPath = GetConfig("DbfPath");
+            string _strDbfOutPutDir = GetConfig("DbfOutPutDir");
+            string _strExcelPath = GetConfig("ExcelPath");
+            string _strXmlPath = GetConfig("XmlOutPutPath");
+            string _strUploadFlag = GetConfig("UploadFlag");
+            string _strDBType = GetConfig("DBType");
+            string _strTargetDBType = GetConfig("TargetDBType");
+            string _strXmlOutputPath = GetConfig("XmlOutputPath");
+            string _strTimeKind = GetConfig("TimeKind");
+            string _strUseInterface = GetConfig("UseInterface");
+            string _strUrl = GetConfig("WebServiceUrl");
+            string _strUseAdapterSQL=GetConfig("UseAdapterSQL");
+            string _strAdapterSQL = GetConfig("AdapterSQL");
             switch (_strExportType)
             {
                 case m_strDB:
-                    //rb_db.Checked = true;
                     tabControl1.SelectedIndex = 0;
-                    //txt_value.Text = _strTargetConnectionString;
                     break;
                 case m_strEXCEL:
-                    //rb_excel.Checked = true;
                     tabControl1.SelectedIndex = 1;
-                    txt_excel.Text = _strExcelPath;
                     break;
                 case m_strDBF:
-                    //rb_dbf.Checked = true;
                     tabControl1.SelectedIndex = 2;
-                    txt_dbf.Text = _strDbfPath;
-                    textBox5.Text = _strDbfOutPutDir;
                     break;
                 case m_strXML:
-                    //rb_xml.Checked = true;
                     tabControl1.SelectedIndex = 3;
-                    txt_xmlsavepath.Text = _strXmlOutputPath;
                     break;
                 default:
-                    throw new Exception("未知关键字[DB,DBF,XML,EXCEL]");
+                    CommonFunction.WriteError("未知关键字[DB,DBF,XML,EXCEL]");
                     break;
             }
+            txt_dbf.Text = _strDbfPath;
+            textBox5.Text = _strDbfOutPutDir;
+            txt_xmlsavepath.Text = _strXmlOutputPath;
+            txt_excel.Text = _strExcelPath;
             comboBox1.Text = _strDBType;
             comboBox2.Text = _strTargetDBType;
             comboBox3.Text = _strTimeKind;
@@ -176,6 +150,8 @@ namespace DataExport
             comboBox5.Text = _strExportType;
             comboBox6.Text = _strUseInterface;
             textBox4.Text = _strUrl;
+            comboBox7.Text = _strUseAdapterSQL;
+            richTextBox2.Text = _strAdapterSQL;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -200,22 +176,22 @@ namespace DataExport
 
         private void button7_Click(object sender, EventArgs e)
         {
-            //获取Configuration对象
-            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             string _strExportType = comboBox5.Text;
             string _strDBType = comboBox1.Text;
             string _strUpLoad = comboBox4.Text;
             string _strTimeKind = comboBox3.Text;
             string _strUseInterface = comboBox6.Text;
             string _strUrl = textBox4.Text;
-            config.AppSettings.Settings["TimeKind"].Value = _strTimeKind;
-            config.AppSettings.Settings["ExportType"].Value = _strExportType;
-            config.AppSettings.Settings["DBType"].Value = _strDBType;
-            config.AppSettings.Settings["UploadFlag"].Value = _strUpLoad;
-            config.AppSettings.Settings["UseInterface"].Value = _strUseInterface;
-            config.AppSettings.Settings["WebServiceUrl"].Value = _strUrl;
-            config.Save(ConfigurationSaveMode.Modified);
-            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+            string _strUseAdapterSQL = comboBox7.Text;
+            string _strAdapterSQL = richTextBox2.Text;
+            SaveConfig("TimeKind", _strTimeKind);
+            SaveConfig("ExportType", _strExportType);
+            SaveConfig("DBType", _strDBType);
+            SaveConfig("UploadFlag", _strUpLoad);
+            SaveConfig("UseInterface", _strUseInterface);
+            SaveConfig("WebServiceUrl", _strUrl);
+            SaveConfig("UseAdapterSQL", _strUseAdapterSQL);
+            SaveConfig("AdapterSQL", _strAdapterSQL);
             mf.SetBaseInfo();
         }
 

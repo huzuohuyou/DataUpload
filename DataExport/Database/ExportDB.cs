@@ -302,8 +302,8 @@ namespace DataExport
 
         internal static string GetObjectBandedSQL(string _strObjectName)
         {
-            string _strBandedSQL = "SELECT \n PATIENT_ID,\nVISIT_ID,\n ";
-            string _strSQL = string.Format(@"selct * from '{0}' where 1=0", _strObjectName);
+            string _strBandedSQL = " SELECT \n PATIENT_ID,\n VISIT_ID, ";
+            string _strSQL = string.Format(@"select * from {0} where 1=0", _strObjectName);
             DataTable _dtObject = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
             if (null==_dtObject)
             {
@@ -311,9 +311,10 @@ namespace DataExport
             }
             foreach (DataColumn var in _dtObject.Columns)
             {
-                _strBandedSQL+="\t"+ var.Caption.ToUpper()+",\n";
+                _strBandedSQL += "\n " + var.Caption.ToUpper() + ",";
             }
-            _strBandedSQL += " FROM [±íÃû]\n WHERE ";
+            _strBandedSQL=_strBandedSQL.Trim(',');
+            _strBandedSQL += "\n FROM " + _strObjectName + "\n WHERE ";
             return _strBandedSQL;
         }
     }
