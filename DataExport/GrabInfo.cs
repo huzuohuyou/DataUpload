@@ -562,8 +562,8 @@ namespace DataExport
         /// <returns>病人信息</returns>
         public static void GetPatientData()
         {
-            PublicVar.successcount = 0;
-            PublicVar.falsecount = 0;
+            PublicVar.m_nSuccessCount = 0;
+            PublicVar.m_nFalseCount = 0;
             DataTable _dtSql = GrabInfo.GetConfigSQL();
             foreach (DataRow dr in _dtSql.Rows)
             {
@@ -576,7 +576,7 @@ namespace DataExport
                     ExeExport(_dtOnePatOneObj);                   
                 }
             }
-            RemoteMessage.SendMessage("导入成功:" + PublicVar.successcount + "\n导入失败:" + PublicVar.falsecount);
+            RemoteMessage.SendMessage("导入成功:" + PublicVar.m_nSuccessCount + "\n导入失败:" + PublicVar.m_nFalseCount);
         }
 
         /// <summary>
@@ -638,11 +638,11 @@ namespace DataExport
                 case "DBF":
                     ie = new ExportDBF(p_dtOnePatInfo);
                     break;
-                case "EXCLE":
-                    ie = new ExportExcel();
-                    string _strExceltPath =  uctlBaseConfig.GetConfig("ExceltPath");
-                    PublicVar.ExcelPath = _strExceltPath;
-                    PublicVar.ExcelSource = PublicVar.ExportData.Tables[0];
+                case "EXCEL":
+                    ie = new ExportExcel(p_dtOnePatInfo);
+                    //string _strExceltPath =  uctlBaseConfig.GetConfig("ExceltPath");
+                    //PublicVar.ExcelPath = _strExceltPath;
+                    //PublicVar.ExcelSource = PublicVar.ExportData.Tables[0];
                     break;
                 case "XML":
                     ie = new FluenctExport(PublicVar.m_dsPatients);
@@ -693,5 +693,25 @@ namespace DataExport
             //t.Start();
         }
 
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

@@ -11,6 +11,7 @@ using System.Threading;
 using System.Data.OleDb;
 using System.IO;
 using System.Xml;
+using System.Data.OracleClient;
 
 namespace ToolFunction
 {
@@ -1250,6 +1251,37 @@ namespace ToolFunction
             return _dtTable;
         }
 
+
+        /// <summary>
+        /// OracleConnection执行查询操作
+        /// </summary>
+        /// <param name="p_strSql">sql</param>
+        /// <param name="p_strTablename">表名</param>
+        /// <param name="p_strConnectionStringName">连接串名</param>
+        /// <returns></returns>
+        public static DataTable ExecuteBySQL(string p_strSql, string p_strTablename, string p_strConnectionStringName)
+        {
+            DataTable _dtTable = new DataTable(p_strTablename);
+            String _strConnectionString = ConfigurationManager.ConnectionStrings[p_strConnectionStringName].ConnectionString;
+            using (OracleConnection _oleConn = new OracleConnection(_strConnectionString))
+            {
+                try
+                {
+                    OracleCommand _oleCmd = _oleConn.CreateCommand();
+                    _oleConn.Open();
+                    _oleCmd.CommandText = p_strSql;
+                    OracleDataAdapter adapter = new OracleDataAdapter(_oleCmd);
+                    adapter.Fill(_dtTable);
+                }
+                catch (Exception exp)
+                {
+                    WriteError("DB", exp.Message);
+                    return null;
+                }
+            }
+            return _dtTable;
+        }
+
         /// <summary>
         /// 执行增删改操作
         /// </summary>
@@ -1273,6 +1305,33 @@ namespace ToolFunction
                 {
                     WriteError("DB",exp.Message);
                     //throw;
+                }
+            }
+            return _iExeCount;
+        }
+
+        /// <summary>
+        /// 执行增删改操作
+        /// </summary>
+        /// <param name="p_strSql">sql</param>
+        /// <param name="p_strConnectionStringName">连接串名</param>
+        /// <returns></returns>
+        public static int ExecuteNonQuery(string p_strSql, string p_strConnectionStringName)
+        {
+            int _iExeCount = 0;
+            String _strConnectionString = ConfigurationManager.ConnectionStrings[p_strConnectionStringName].ConnectionString;
+            using (OracleConnection _oleConn = new OracleConnection(_strConnectionString))
+            {
+                OracleCommand _oleCmd = _oleConn.CreateCommand();
+                try
+                {
+                    _oleConn.Open();
+                    _oleCmd.CommandText = p_strSql;
+                    _iExeCount = _oleCmd.ExecuteNonQuery();
+                }
+                catch (Exception exp)
+                {
+                    WriteError("DB", exp.Message);
                 }
             }
             return _iExeCount;

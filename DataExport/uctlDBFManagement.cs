@@ -228,33 +228,11 @@ namespace DataExport
 
         private void button7_Click(object sender, EventArgs e)
         {
-            string _strBandedSQL = string.Empty;
-            DataGridViewRow _drObject = dataGridView1.CurrentRow;
-            string _strExportType = uctlBaseConfig.GetConfig("ExportType");
-            string _strObjectName = _drObject.Cells["TABLE_NAME"].Value.ToString();
-            string _strSQL = string.Empty;// string.Format(@"delete pt_chapter_dict where table_name = '{0}'", _strObjectName);
-            DataTable _dtObject = null;
-            if (DialogResult.OK == MessageBox.Show("确定同步[章节]数据？", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
+            string _strObjectName = GetCurrentObjectName(); 
+            if (DialogResult.OK == MessageBox.Show("确定生成数据抓取SQL？", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
             {
-                //CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
-                switch (_strExportType)
-                {
-                    case "DB":
-                        _strBandedSQL = ExportDB.GetObjectBandedSQL(_strObjectName);
-                        break;
-                    case "XML":
-                        _dtObject = ExportXml.GetObject(_strObjectName);
-                        break;
-                    case "EXCEL":
-                        break;
-                    case "DBF":
-                        break;
-                    default:
-                        break;
-                }
-                rtb_sql.Text = _strBandedSQL;
-                //SycnChapterData(_strObjectName, _dtObject);
-                InitData();
+                ExportExcel ee = new ExportExcel();
+                rtb_sql.Text=ee.SynSQL(_strObjectName);
             }
         }
 

@@ -148,10 +148,8 @@ namespace DataExport
            
             if (CommonFunction.OleExecuteNonQuery(m_strSQL, "TARGET") > 0)
             {
-                RemoteMessage.SendMessage("[执行].....................TRUE");
                 return true;
             }
-            CommonFunction.WriteError("执行异常[SQL]:" + m_strSQL);
             return false;
         }
 
@@ -168,9 +166,17 @@ namespace DataExport
                 string m_strValues = CombineValues(drValue);
                 if (!ExeCuteSQL(m_strTableName, m_strColumns, m_strValues))
                 {
+                    RemoteMessage.SendMessage("[执行].....................FALSE");
+                    PublicVar.m_nFalseCount++;
                     WritLog();
                 }
+                else
+                {
+                    RemoteMessage.SendMessage("[执行].....................TRUE");
+                    PublicVar.m_nSuccessCount++;
+                }
             }
+
         }
 
         public static void WritLog() { }
@@ -273,7 +279,28 @@ namespace DataExport
         public void Export()
         {
             DoImport(m_dtSource);
-           
+        }
+
+        #endregion
+
+
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

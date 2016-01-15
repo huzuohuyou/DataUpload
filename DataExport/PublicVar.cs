@@ -11,7 +11,7 @@ namespace DataExport
         public static string m_strCurrentPatientId = string.Empty;
         public static string m_strCurrentVisitId = string.Empty;
         public static string m_strEmrConnection = "EMR";
-        public static int successcount = 0, falsecount = 0;
+        public static int m_nSuccessCount = 0, m_nFalseCount = 0;
         /// <summary>
         /// 分组病人数据集
         /// </summary>

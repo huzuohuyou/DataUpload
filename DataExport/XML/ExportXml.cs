@@ -472,5 +472,25 @@ namespace DataExport
 
         #endregion
 
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

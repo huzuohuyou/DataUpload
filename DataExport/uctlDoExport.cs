@@ -81,6 +81,11 @@ namespace DataExport
             Thread t1 = new Thread(new ThreadStart(GrabInfo.GetPatientData));
             t1.Start();
         }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 
 }

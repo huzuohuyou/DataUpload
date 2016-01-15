@@ -42,10 +42,8 @@ namespace DataExport
 
         public ExportDBF( DataTable p_dtSource)
         {
-            //m_strDbfTemplet = p_strTempletPath;
             m_dtSource = p_dtSource;
         }
-        //DALUseLocal DALUseLocal = new DALUseLocal();
         string strErrorPatInf = "";
 
         #region 处理DBF文件
@@ -549,20 +547,17 @@ namespace DataExport
         /// <param name="dt">数据源</param>
         /// <param name="strFileName">文件路径</param>
         /// <returns>插入是否成功</returns>
-        public bool InsertDBF(DataTable dt, string strFileName)
+        public bool InsertDBF(DataTable p_dtSource, string p_strTempletFileFullName)
         {
             try
             {
-                string strName = strFileName.Substring(strFileName.LastIndexOf('\\') + 1);
-                string _strTarget = CommonFunction.GetConfig("DbfOutPutDir") + "\\" + strName;
-                CommonFunction.CopyFile(strFileName, _strTarget,false);
-                string strColumn = ReColumnStr(_strTarget);//存放要插入的字段名
+                string _strFileName = p_strTempletFileFullName.Substring(p_strTempletFileFullName.LastIndexOf('\\') + 1);
+                string _strTarget = CommonFunction.GetConfig("DbfOutPutDir") + "\\" + _strFileName;
+                CommonFunction.CopyFile(p_strTempletFileFullName, _strTarget,false);
+                string strColumn = GetColumnStr(_strTarget);//存放要插入的字段名
                 DataTable dtColumn = ReadDBF(_strTarget);//存放要插入的字段名
-                //PublicVar.successcount = 0;
-                //PublicVar.falsecount = 0;
                 CommonFunction cf = new CommonFunction();
-                //cf.WaitingThreadStart();
-                foreach (DataRow dr in dt.Rows)
+                foreach (DataRow dr in p_dtSource.Rows)
                 {
                     string strsql = "insert into TableName( ";//sql的开头
                     strsql += strColumn;
@@ -572,12 +567,12 @@ namespace DataExport
                     strsql += ")";
                     if (WriteDBF(_strTarget, strsql))
                     {
-                        PublicVar.successcount++;
+                        PublicVar.m_nSuccessCount++;
                         RemoteMessage.SendMessage("插入成功...");
                     }
                     else
                     {
-                        PublicVar.falsecount++;
+                        PublicVar.m_nFalseCount++;
                         RemoteMessage.SendMessage("插入失败...");
                     }
                 }
@@ -591,6 +586,11 @@ namespace DataExport
                 CommonFunction.WriteError(ex.Message);
             }
             return true;
+        }
+
+        private string GetColumnStr(string _strTarget)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
         #endregion
 
@@ -694,12 +694,28 @@ namespace DataExport
 
         public void Export()
         {
-            //CommonFunction cf = new CommonFunction();
-            //string dbfpath = PublicVar.ExportParam[0].ToString();
-            //DataTable dt = (DataTable)PublicVar.ExportParam[1];
-            //InsertDBF(dt, dbfpath);
             string _strDbfTempletPath = GetDbfTempletPath(m_dtSource.TableName);
             InsertDBF(m_dtSource, _strDbfTempletPath);
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

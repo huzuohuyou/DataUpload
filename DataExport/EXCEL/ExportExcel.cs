@@ -10,17 +10,39 @@ namespace DataExport
 {
     public class ExportExcel : IExport
     {
+        private DataTable m_dtSource = null;
         #region IExport 成员
 
         public void Export()
         {
-            //AddExcel(PublicProperty.ExcelPath, PublicProperty.ExcelSource);
-            DataSetToExcel(PublicVar.ExcelSource,PublicVar.ExcelPath);
-            //InsertIntoExcel(PublicProperty.ExcelPath, PublicProperty.ExcelSource);
-           
+            string _strDbfTempletPath = GetExcelTempletPath(m_dtSource.TableName);
+            InsertExcel(m_dtSource, _strDbfTempletPath);
+        }
+
+        /// <summary>
+        /// 返回dbf路径
+        /// </summary>
+        /// <param name="p_strObjectName"></param>
+        /// <returns></returns>
+        public string GetExcelTempletPath(string p_strObjectName)
+        {
+            string _strSQL = string.Format("select * from PT_TABLES_DICT where TABLE_NAME ='{0}' ", p_strObjectName);
+            DataTable _dtobj = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+            if (_dtobj != null && _dtobj.Rows.Count > 0)
+            {
+                return _dtobj.Rows[0]["ms"].ToString();
+            }
+            return "";
         }
 
         #endregion
+
+        public ExportExcel() { }
+
+        public ExportExcel(DataTable p_dtSource)
+        {
+            m_dtSource = p_dtSource;
+        }
 
         /// <summary>
         /// 将数据集导出成为Excel，不需求要Excel模板
@@ -379,81 +401,284 @@ namespace DataExport
 
         #region 将DataTable导出为Excel(OleDb 方式操作）
 
+        /// <summary>
+        /// 获取Excel的连接
+        /// </summary>
+        /// <returns></returns>
+        public static OleDbConnection GetOleDbConnection(string p_strTarget)
+        {
+            string _strTarget = p_strTarget;
+            OleDbConnection oleDbConn = new OleDbConnection();
+            oleDbConn.ConnectionString = "Provider=Microsoft.Jet.OleDb.4.0;Data Source=" + _strTarget + @";Extended ProPerties=""Excel 8.0;HDR=Yes;""";
+            try
+            {
+                oleDbConn.Open();
+            }
+            catch (Exception)
+            {
+                oleDbConn.ConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + _strTarget + @";Extended ProPerties=""Excel 8.0;HDR=Yes;""";
+                oleDbConn.Open();
+            }
+            return oleDbConn;
+        }
 
         /// <summary>
         /// 将DataTable导出为Excel(OleDb 方式操作）
         /// </summary>
         /// <param name="dataTable">表</param>
         /// <param name="fileName">导出默认文件名</param>
-        public static void DataSetToExcel(DataTable dataTable, string fileName)
+        public static void InsertExcel(DataTable p_dtSource, string p_strTempletFullName)
         {
-            //SaveFileDialog saveFileDialog = new SaveFileDialog();
-            //saveFileDialog.Filter = "xls files (*.xls)|*.xls";
-            //saveFileDialog.FileName = fileName;
-            //if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            //{
-            //fileName = saveFileDialog.FileName;
-            if (File.Exists(fileName))
+            string _strFileName = p_strTempletFullName.Substring(p_strTempletFullName.LastIndexOf('\\') + 1);
+            string _strTarget = CommonFunction.GetConfig("ExcelOutPutDir") + "\\" + _strFileName;
+            if (!File.Exists(_strTarget))
             {
-                try
+                CommonFunction.CopyFile(p_strTempletFullName, _strTarget, false);
+            }
+            string strColumn = GetColumnStr(_strTarget);//存放要插入的字段名
+            DataTable dtColumn = ReadExcel(_strTarget);//存放要插入的字段名
+            int _icount = 0;
+            foreach (DataRow dr in p_dtSource.Rows)
+            {
+                _icount++;
+                string _strSQL = "insert into [sheet1$]( ";//sql的开头
+                _strSQL += strColumn;
+                _strSQL += ") values (";
+                _strSQL += ReturnStrValues(dr, dtColumn);
+                _strSQL += ")";
+                //CommonFunction.WriteLog("SQL:" + _strSQL);
+                if (1 == WriteExcel(_strTarget, _strSQL))
                 {
-                    File.Delete(fileName);
+                    PublicVar.m_nSuccessCount++;
+                    RemoteMessage.SendMessage("插入成功...");
                 }
-                catch
+                else
                 {
-                    MessageBox.Show("该文件正在使用中,关闭文件或重新命名导出文件再试!");
-                    return;
+                    PublicVar.m_nFalseCount++;
+                    RemoteMessage.SendMessage("插入失败...");
                 }
             }
-            OleDbConnection oleDbConn = new OleDbConnection();
-            OleDbCommand oleDbCmd = new OleDbCommand();
-            string sSql = "";
+        }
+
+        private static int WriteExcel(string _strTarget, string p_strSQL)
+        {
+            using (OleDbConnection oleDbConn = GetOleDbConnection(_strTarget))
+            {
+                OleDbCommand oleDbCmd = new OleDbCommand();
+                string _strSQL = p_strSQL;
+                try
+                {
+                    oleDbCmd.CommandType = CommandType.Text;
+                    oleDbCmd.Connection = oleDbConn;
+                    oleDbCmd.CommandText = _strSQL;
+                    //CommonFunction.WriteLog("start insert...");
+                    int _n = oleDbCmd.ExecuteNonQuery();
+                    //CommonFunction.WriteLog("end insert..." + _n);
+                    return _n;
+                }
+                catch (Exception ex)
+                {
+                    CommonFunction.WriteError(ex.ToString());
+                }
+            }
+            return -1;
+        }
+
+        private static string ReturnStrValues(DataRow p_drSource, DataTable p_dtExcel)
+        {
+            DataTable dt = p_drSource.Table;
+            string strSqlValues = "";
+            foreach (DataColumn _dc in p_dtExcel.Columns)
+            {
+                if (dt.Columns.Contains(_dc.ColumnName))
+                {
+                    string _strTemp = p_drSource[_dc.ColumnName.ToUpper()].ToString();
+                    if (_dc.DataType.Name == "String"|true) //拼接字符串类型
+                    {
+                        if (_strTemp != null && _strTemp != "")
+                        {
+                            strSqlValues += "'" + _strTemp + "',";
+                        }
+                        else
+                        {
+                            strSqlValues += "null,";
+                        }
+                    }
+                    //else if (_dc.DataType.Name.Contains("Int") || _dc.DataType.Name.Contains("Decimal") || _dc.DataType.Name.Contains("Double"))//拼接数字类型
+                    //{
+                    //    if (_strTemp != null && _strTemp != "")
+                    //    {
+                    //        strSqlValues += p_drSource[_dc].ToString() + ",";
+                    //    }
+                    //    else
+                    //    {
+                    //        strSqlValues += "null,";
+                    //    }
+
+                    //}
+                    //else if (_dc.DataType.Name == "DateTime")//拼接日期类型
+                    //{
+                    //    if (_strTemp != null && _strTemp != "")
+                    //    {
+                    //        strSqlValues += GetDate(p_drSource[_dc].ToString()) + ",";
+                    //    }
+                    //    else
+                    //    {
+                    //        strSqlValues += GetDate("1949-01-01") + ",";
+                    //        //strSqlValues += "1949-01-01,";
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    string _s = _dc.DataType.Name;
+                    //    strSqlValues += "null,";
+                    //}
+                }
+                else
+                {
+                    strSqlValues += "null,";
+                }
+            }
+            int _p = strSqlValues.Trim(',').Split(',').Length;
+            return strSqlValues.Trim(','); ;
+        }
+
+        /// <summary>
+        /// 获取Excle的列组成的column字符串
+        /// </summary>
+        /// <param name="_strTarget"></param>
+        /// <returns></returns>
+        private static string GetColumnStr(string _strTarget)
+        {
+            DataTable _dtTemp = ReadExcel(_strTarget);
             try
             {
-                oleDbConn.ConnectionString = "Provider=Microsoft.Jet.OleDb.4.0;Data Source=" + fileName + @";Extended ProPerties=""Excel 8.0;HDR=Yes;""";
-                oleDbConn.Open();
-                oleDbCmd.CommandType = CommandType.Text;
-                oleDbCmd.Connection = oleDbConn;
-                sSql = "CREATE TABLE sheet1 (";
-                for (int i = 0; i < dataTable.Columns.Count; i++)
+                string _strColumn = string.Empty;
+                foreach (DataColumn var in _dtTemp.Columns)
                 {
-                    // 字段名称出现关键字会导致错误。
-                    if (i < dataTable.Columns.Count - 1)
-                        sSql += "[" + dataTable.Columns[i].Caption + "] TEXT(100) ,";
-                    else
-                        sSql += "[" + dataTable.Columns[i].Caption + "] TEXT(200) )";
+                    _strColumn += var.Caption + ",";
                 }
-                oleDbCmd.CommandText = sSql;
-                oleDbCmd.ExecuteNonQuery();
-                for (int j = 0; j < dataTable.Rows.Count; j++)
-                {
-                    sSql = "INSERT INTO sheet1 VALUES('";
-                    for (int i = 0; i < dataTable.Columns.Count; i++)
-                    {
-                        if (i < dataTable.Columns.Count - 1)
-                            sSql += dataTable.Rows[j][i].ToString() + " ','";
-                        else
-                            sSql += dataTable.Rows[j][i].ToString() + " ')";
-                    }
-                    oleDbCmd.CommandText = sSql;
-                    oleDbCmd.ExecuteNonQuery();
-                }
-                string mess = "数据导出成功！";
-                ToolFunction.uctlMessageBox.frmDisappearShow(mess);
+                _strColumn = _strColumn.Trim(',');
+                return _strColumn;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("导出EXCEL失败:" + ex.Message);
+                CommonFunction.WriteError("GetColumnStr");
             }
-            finally
-            {
-                oleDbCmd.Dispose();
-                oleDbConn.Close();
-                oleDbConn.Dispose();
-            }
-            //}
+            return "返回列失败";
         }
+
+        /// <summary>
+        /// 读取Excle
+        /// </summary>
+        /// <param name="_strTarget"></param>
+        /// <returns></returns>
+        private static DataTable ReadExcel(string _strTarget)
+        {
+            CommonFunction.WriteLog("开始读取Excel" + _strTarget);
+            using (OleDbConnection oleDbConn = GetOleDbConnection(_strTarget))
+            {
+                string _strSQL = string.Empty;
+                try
+                {
+                    _strSQL = "select * from  [sheet1$] where 1=0";
+                    OleDbDataAdapter da = new OleDbDataAdapter(_strSQL, oleDbConn);
+                    DataSet ds = new DataSet();
+                    da.Fill(ds, "Templet");
+                    return ds.Tables[0];
+                }
+                catch (Exception ex)
+                {
+                    CommonFunction.WriteError(ex.ToString());
+                }
+            }
+            return null;
+        }
+
+        private static string ReColumnStr(string _strTarget)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+
+        /// <summary>
+        /// 将DataTable导出为Excel(OleDb 方式操作）
+        /// </summary>
+        /// <param name="dataTable">表</param>
+        /// <param name="fileName">导出默认文件名</param>
+        //public static void InsertExcel(DataTable dataTable, string p_strTempletFullName)
+        //{
+        //    string _strFileName = p_strTempletFullName.Substring(strFileName.LastIndexOf('\\') + 1);
+        //    string _strTarget = CommonFunction.GetConfig("ExcelOutPutDir") + "\\" + _strFileName;
+        //    CommonFunction.CopyFile(p_strTempletFullName, _strTarget, false);
+        //    OleDbConnection oleDbConn = new OleDbConnection();
+        //    OleDbCommand oleDbCmd = new OleDbCommand();
+        //    string sSql = "";
+        //    try
+        //    {
+        //        oleDbConn.ConnectionString = "Provider=Microsoft.Jet.OleDb.4.0;Data Source=" + p_strTempletFullName + @";Extended ProPerties=""Excel 8.0;HDR=Yes;""";
+        //        oleDbConn.Open();
+        //        oleDbCmd.CommandType = CommandType.Text;
+        //        oleDbCmd.Connection = oleDbConn;
+        //        sSql = "CREATE TABLE sheet1 (";
+        //        for (int i = 0; i < dataTable.Columns.Count; i++)
+        //        {
+        //            // 字段名称出现关键字会导致错误。
+        //            if (i < dataTable.Columns.Count - 1)
+        //                sSql += "[" + dataTable.Columns[i].Caption + "] TEXT(100) ,";
+        //            else
+        //                sSql += "[" + dataTable.Columns[i].Caption + "] TEXT(200) )";
+        //        }
+        //        oleDbCmd.CommandText = sSql;
+        //        oleDbCmd.ExecuteNonQuery();
+        //        for (int j = 0; j < dataTable.Rows.Count; j++)
+        //        {
+        //            sSql = "INSERT INTO sheet1 VALUES('";
+        //            for (int i = 0; i < dataTable.Columns.Count; i++)
+        //            {
+        //                if (i < dataTable.Columns.Count - 1)
+        //                    sSql += dataTable.Rows[j][i].ToString() + " ','";
+        //                else
+        //                    sSql += dataTable.Rows[j][i].ToString() + " ')";
+        //            }
+        //            oleDbCmd.CommandText = sSql;
+        //            oleDbCmd.ExecuteNonQuery();
+        //        }
+        //        string mess = "数据导出成功！";
+        //        ToolFunction.uctlMessageBox.frmDisappearShow(mess);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("导出EXCEL失败:" + ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        oleDbCmd.Dispose();
+        //        oleDbConn.Close();
+        //        oleDbConn.Dispose();
+        //    }
+        //}
         #endregion
 
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

@@ -50,11 +50,18 @@ namespace ToolFunction
         /// <param name="p_strMess"></param>
         public static void SendMessage(string p_strMess)
         {
-            if (obj == null)
+            try
             {
-                Console.WriteLine("Could not locate TCP server");
+                if (obj == null)
+                {
+                    Console.WriteLine("Could not locate TCP server");
+                }
+                obj.ShowMess(p_strMess);
             }
-            obj.ShowMess(p_strMess);
+            catch (Exception ex)
+            {
+                CommonFunction.WriteError(ex.ToString());
+            }
         }
     }
 }

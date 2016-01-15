@@ -95,7 +95,7 @@
   <ItemGroup>
     <Compile Include="AutoUpload.cs" />
     <Compile Include="ConversionData.cs" />
-    <Compile Include="Database\SingleObjectDBExport.cs" />
+    <Compile Include="database\SingleObjectDBExport.cs" />
     <Compile Include="DBTemplet.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,19 +126,19 @@
     <Compile Include="uctlDBFManagement.Designer.cs">
       <DependentUpon>uctlDBFManagement.cs</DependentUpon>
     </Compile>
-    <Compile Include="外部接口\CallInterface.cs" />
-    <Compile Include="外部接口\EmrInfo.cs" />
-    <Compile Include="Database\ExportDB.cs" />
-    <Compile Include="Excel\ExportExcel.cs" />
-    <Compile Include="Xml\AsynXmlExport.cs" />
+    <Compile Include="outinterface\CallInterface.cs" />
+    <Compile Include="outinterface\EmrInfo.cs" />
+    <Compile Include="database\ExportDB.cs" />
+    <Compile Include="excel\ExportExcel.cs" />
+    <Compile Include="xml\AsynXmlExport.cs" />
     <Compile Include="ExportFile.cs" />
-    <Compile Include="DBF\ExportDBF.cs" />
-    <Compile Include="Database\AsynDbExport.cs" />
-    <Compile Include="InterFace\IFreshData.cs" />
-    <Compile Include="InterFace\IValidate.cs" />
+    <Compile Include="dbf\ExportDBF.cs" />
+    <Compile Include="database\AsynDbExport.cs" />
+    <Compile Include="interface\IFreshData.cs" />
+    <Compile Include="interface\IValidate.cs" />
     <Compile Include="PublicVar.cs" />
     <Compile Include="FixDateTime.cs" />
-    <Compile Include="InterFace\IExport.cs" />
+    <Compile Include="interface\IExport.cs" />
     <Compile Include="uctlShowFixInfo.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -202,6 +202,10 @@
       <DependentUpon>uctlDBFManagement.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="uctlEXCELManagement.resx">
+      <DependentUpon>uctlEXCELManagement.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -246,10 +250,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
-    <Compile Include="外部接口\WebServiceHelper.cs" />
-    <Compile Include="Xml\ExportXml.cs" />
-    <Compile Include="文件接口\EmrFile.cs" />
-    <Compile Include="文件接口\EmrInfoManagement.cs" />
+    <Compile Include="outinterface\WebServiceHelper.cs" />
+    <Compile Include="xml\ExportXml.cs" />
+    <Compile Include="iemrfile\EmrFile.cs" />
+    <Compile Include="iemrfile\EmrInfoManagement.cs" />
+    <Compile Include="uctlEXCELManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="uctlEXCELManagement.Designer.cs">
+      <DependentUpon>uctlEXCELManagement.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Ico\17.ico" />

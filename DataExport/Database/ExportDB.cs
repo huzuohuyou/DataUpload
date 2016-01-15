@@ -188,35 +188,39 @@ namespace DataExport
 
         public string ValidateData(string p_strTableName)
         {
+            ShowFixInfo.m_strWarning = String.Empty;
+            string _strFalse = string.Empty;
             ShowFixInfo.m_dtSource.Rows.Clear();
             string _strSQLValue = GetSQL(p_strTableName);
             string _strSQL = string.Format("select * from {0} where 1=0", p_strTableName);
             DataTable _dtTarget = CommonFunction.OleExecuteBySQL(_strSQL, "", "TARGET");
             if (_dtTarget == null)
             {
-                throw new Exception("目标库中无表" + p_strTableName);
+                return ShowFixInfo.m_strWarning += "目标库中无表" + p_strTableName;
             }
             _strSQL = _strSQLValue.ToUpper().Trim().Replace("@PATIENT_ID", "1").Replace("@VISIT_ID", "1");
             DataTable _dtLocal = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
             if (_dtLocal == null)
             {
-                throw new Exception("SQL语句有误" + _strSQL);
-            }            
-            if (!_dtLocal.Columns.Contains("PATIENT_ID")||!_dtLocal.Columns.Contains("VISIT_ID"))
-            {
-                 ShowFixInfo.m_strWarning += ("警告:不存在 PATIENT_ID , VISIT_ID 列");
+                ShowFixInfo.m_strWarning += "SQL语句有误" + _strSQL;
             }
-            string _strFalse = string.Empty;
-            foreach (DataColumn var in _dtTarget.Columns)
+            else
             {
-                if (_dtLocal.Columns.Contains(var.Caption))
+                if ((!_dtLocal.Columns.Contains("PATIENT_ID") || !_dtLocal.Columns.Contains("VISIT_ID")))
                 {
-                    ShowFixInfo.m_dtSource.Rows.Add(var.Caption, "TRUE");
+                    ShowFixInfo.m_strWarning += ("警告:不存在 PATIENT_ID , VISIT_ID 列");
                 }
-                else
+                foreach (DataColumn var in _dtTarget.Columns)
                 {
-                    ShowFixInfo.m_dtSource.Rows.Add(var.Caption, "FALSE");
-                    _strFalse += "[" + var.Caption + "]";
+                    if (_dtLocal.Columns.Contains(var.Caption))
+                    {
+                        ShowFixInfo.m_dtSource.Rows.Add(var.Caption, "TRUE");
+                    }
+                    else
+                    {
+                        ShowFixInfo.m_dtSource.Rows.Add(var.Caption, "FALSE");
+                        _strFalse += "[" + var.Caption + "]";
+                    }
                 }
             }
             if (_strFalse=="")
@@ -317,5 +321,25 @@ namespace DataExport
             _strBandedSQL += "\n FROM " + _strObjectName + "\n WHERE ";
             return _strBandedSQL;
         }
+
+        #region IExport 成员
+
+
+        public void LogFalse(List<string> p_list)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IExport 成员
+
+
+        public string SynSQL(string p_strObjName)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }

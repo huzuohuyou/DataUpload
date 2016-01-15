@@ -110,7 +110,7 @@ namespace DataExport
             string _strExportType = GetConfig("ExportType");
             string _strDbfPath = GetConfig("DbfPath");
             string _strDbfOutPutDir = GetConfig("DbfOutPutDir");
-            string _strExcelPath = GetConfig("ExcelPath");
+            string _strExcelOutPutDir = GetConfig("ExcelOutPutDir");
             string _strXmlPath = GetConfig("XmlOutPutPath");
             string _strUploadFlag = GetConfig("UploadFlag");
             string _strDBType = GetConfig("DBType");
@@ -142,7 +142,7 @@ namespace DataExport
             txt_dbf.Text = _strDbfPath;
             textBox5.Text = _strDbfOutPutDir;
             txt_xmlsavepath.Text = _strXmlOutputPath;
-            txt_excel.Text = _strExcelPath;
+            txt_excel.Text = _strExcelOutPutDir;
             comboBox1.Text = _strDBType;
             comboBox2.Text = _strTargetDBType;
             comboBox3.Text = _strTimeKind;
@@ -176,6 +176,10 @@ namespace DataExport
 
         private void button7_Click(object sender, EventArgs e)
         {
+            if (comboBox7.Text=="TRUE"&&richTextBox2.Text == "")
+            {
+                MessageBox.Show("开启自动上传时请填写个性化SQL");
+            }
             string _strExportType = comboBox5.Text;
             string _strDBType = comboBox1.Text;
             string _strUpLoad = comboBox4.Text;
@@ -288,7 +292,7 @@ namespace DataExport
             else if (comboBox5.Text == "EXCEL")
             {
                  tabControl1.SelectedIndex = 1;
-                 txt_excel.Text = txt_xmlsavepath.Text = GetConfig("ExcelPath"); 
+                 txt_excel.Text = txt_xmlsavepath.Text = GetConfig("ExcelOutPutDir"); 
             }
         }
 
@@ -343,6 +347,26 @@ namespace DataExport
             textBox5.Text = GetConfig("DbfOutPutDir");
             txt_xmlsavepath.Text = GetConfig("XmlOutPutPath");
             txt_excel.Text = txt_xmlsavepath.Text = GetConfig("ExcelPath");
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox4.Text=="TRUE")
+            {
+                comboBox7.Text = "TRUE";
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            fbd_file.ShowDialog();
+            SaveConfig("ExcelOutPutDir", fbd_file.SelectedPath);
+            txt_excel.Text = GetConfig("ExcelOutPutDir");
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
         }
 
 

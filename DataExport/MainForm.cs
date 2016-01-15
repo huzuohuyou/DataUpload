@@ -12,6 +12,7 @@ using System.Configuration;
 using ToolFunction;
 using System.Diagnostics;
 using DataExport.文件接口;
+using System.Threading;
 
 
 namespace DataExport
@@ -78,13 +79,16 @@ namespace DataExport
             //EmrInfoManagement.InitStatus();
             Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             string _strUploadFlag = config.AppSettings.Settings["UploadFlag"].Value;
-            if ("TRUE" == _strUploadFlag.ToUpper())
+            string _strUseAdapter = uctlBaseConfig.GetConfig("UseAdapterSQL");
+            if ("TRUE" == _strUploadFlag.ToUpper() && "TRUE" == _strUseAdapter)
             {
                 string _strExePath = Application.StartupPath + @"\MessagePlatform.exe";
                 m_proRemoteMessage = Process.Start(_strExePath);
                 RemoteMessage.InitClient();
-                AutoUpload au = new AutoUpload();
-                au.Upload();
+                string _strSQL = uctlBaseConfig.GetConfig("AdapterSQL");
+                PublicVar.m_dsPatients = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
+                Thread t1 = new Thread(new ThreadStart(GrabInfo.GetPatientData));
+                t1.Start();
             }
         }
 
@@ -158,7 +162,7 @@ namespace DataExport
 
         private void button2_Click_2(object sender, EventArgs e)
         {
-            uctlDBFManagement ptm = new uctlDBFManagement();
+            uctlEXCELManagement ptm = new uctlEXCELManagement();
             CommonFunction.AddForm3(pl_showcontains, ptm);
         }
 

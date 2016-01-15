@@ -13,9 +13,9 @@ using System.IO;
 using System.Diagnostics;
 namespace DataExport
 {
-    public partial class uctlDBManagement : UserControl
+    public partial class uctlEXCELManagement : UserControl
     {
-        public uctlDBManagement()
+        public uctlEXCELManagement()
         {
             InitializeComponent();
             InitData();
@@ -84,13 +84,11 @@ namespace DataExport
             DataGridViewRow var = dataGridView1.CurrentRow;
             string _strTableName = var.Cells["TABLE_NAME"].Value.ToString();
             string _strExportFlag = var.Cells["EXPORTFLAG"].Value.ToString().ToUpper();
+            if (_strExportFlag!="TRUE")
+            {
+                _strExportFlag = "FALSE";
+            }
             string _strMs = var.Cells["MS"].Value.ToString();
-            //string _strSQLValue = rtb_sql.Text.Trim();
-            //if (_strSQLValue=="")
-            //{
-            //    MessageBox.Show("SQL内容为空.");
-            //    return;
-            //}
             _strSQL = string.Format("select count(*) mycount from pt_tables_dict where  TABLE_NAME = '{0}'", _strTableName);
             int _nCount = int.Parse(CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR").Rows[0]["mycount"].ToString());
             if (0 == _nCount)
@@ -101,14 +99,7 @@ namespace DataExport
             {
                 _strSQL = string.Format("update pt_tables_dict set table_name= '{0}',ms = '{1}' ,exportflag ='{2}' where table_name = '{0}'", _strTableName, _strMs, _strExportFlag);
             }
-
-            //if ((DialogResult.OK == MessageBox.Show("确定保存?", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Information)) && (_strSQLValue.Length > 0))
-            //{
-            //    ExportDB.SaveSQL(_strSQLValue, _strTableName);
-            //if (1 == CommonFunction.OleExecuteNonQuery(_strSQL, "EMR"))
-            //{
-            //    MessageBox.Show("保存成功!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //}
+           
             if (1 == CommonFunction.OleExecuteNonQuery(_strSQL, "EMR"))
             {
                 uctlMessageBox.frmDisappearShow("保存成功！");
@@ -117,7 +108,6 @@ namespace DataExport
             {
                 uctlMessageBox.frmDisappearShow("保存失败,详见错误日志。");
             }
-            //}
         }
     
 
@@ -129,8 +119,19 @@ namespace DataExport
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            string _strSQLValue = ExportDB.GetSQL(dataGridView1.CurrentRow.Cells["TABLE_NAME"].Value.ToString());
-            rtb_sql.Text = _strSQLValue;
+            if (dataGridView1.CurrentCell.ColumnIndex == 0)
+            {
+                string _strSQLValue = ExportDB.GetSQL(dataGridView1.CurrentRow.Cells["TABLE_NAME"].Value.ToString());
+                rtb_sql.Text = _strSQLValue;
+            }
+            if (dataGridView1.CurrentCell.ColumnIndex == 1)
+            {
+                openFileDialog1.ShowDialog();
+                string _strSourceFile = openFileDialog1.FileName;
+                string _strTargetFile = Application.StartupPath + "\\excel\\" + openFileDialog1.SafeFileName;
+                CommonFunction.CopyFile(_strSourceFile, _strTargetFile,true);
+                dataGridView1.CurrentCell.Value = _strTargetFile;
+            }
         }
    
 
@@ -217,11 +218,29 @@ namespace DataExport
             DataGridViewRow _drObject = dataGridView1.CurrentRow;
             string _strExportType = uctlBaseConfig.GetConfig("ExportType");
             string _strObjectName = _drObject.Cells["TABLE_NAME"].Value.ToString();
-            string _strSQL = string.Empty;
-            if (DialogResult.OK == MessageBox.Show("确定生成抓取数据SQL？", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
+            string _strSQL = string.Empty;// string.Format(@"delete pt_chapter_dict where table_name = '{0}'", _strObjectName);
+            DataTable _dtObject = null;
+            if (DialogResult.OK == MessageBox.Show("确定同步[章节]数据？", "Message", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning))
             {
-                _strBandedSQL = ExportDB.GetObjectBandedSQL(_strObjectName);
+                //CommonFunction.OleExecuteNonQuery(_strSQL, "EMR");
+                switch (_strExportType)
+                {
+                    case "DB":
+                        _strBandedSQL = ExportDB.GetObjectBandedSQL(_strObjectName);
+                        break;
+                    case "XML":
+                        _dtObject = ExportXml.GetObject(_strObjectName);
+                        break;
+                    case "EXCEL":
+                        break;
+                    case "DBF":
+                        break;
+                    default:
+                        break;
+                }
                 rtb_sql.Text = _strBandedSQL;
+                //SycnChapterData(_strObjectName, _dtObject);
+                InitData();
             }
         }
 
@@ -289,6 +308,15 @@ namespace DataExport
                 }
                 
             }
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //if (dataGridView1.CurrentCell.ColumnIndex==1)
+            //{
+            //    openFileDialog1.ShowDialog();
+            //    dataGridView1.CurrentCell.Value = openFileDialog1.FileName;
+            //}
         }
 
 

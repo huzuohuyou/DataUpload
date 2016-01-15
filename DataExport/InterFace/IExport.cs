@@ -12,12 +12,17 @@ namespace DataExport
         /// </summary>
         void Export();
 
-        ///// <summary>
-        ///// 获取对象方法
-        ///// </summary>
-        ///// <param name="p_strObjectName"></param>
-        ///// <returns></returns>
-        //DataTable GetObject(string p_strObjectName);
+        /// <summary>
+        /// 记录导出失败的记录
+        /// </summary>
+        void LogFalse(List<string> p_list);
+
+        /// <summary>
+        /// 生成xml、表、excel、dbf对象的绑定数据sql
+        /// </summary>
+        /// <param name="p_strObjName"></param>
+        /// <returns></returns>
+        string SynSQL(string p_strObjName);
         
     }
 }
