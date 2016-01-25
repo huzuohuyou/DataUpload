@@ -152,6 +152,11 @@ namespace DataExport.UploadMrInfoService {
             }
             return false;
         }
+
+        internal string CallInterface(string p_strKey)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
     
     /// <remarks/>

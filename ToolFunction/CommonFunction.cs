@@ -1243,7 +1243,7 @@ namespace ToolFunction
                 }
                 catch (Exception exp)
                 {
-                    WriteError("DB",exp.Message);
+                    WriteError("DB",exp.Message+p_strSql);
                     return null;
                     //throw;
                 }
@@ -1303,7 +1303,7 @@ namespace ToolFunction
                 }
                 catch (Exception exp)
                 {
-                    WriteError("DB",exp.Message);
+                    WriteError("DB",exp.Message+p_strSql);
                     //throw;
                 }
             }

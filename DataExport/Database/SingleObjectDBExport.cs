@@ -4,6 +4,7 @@ using System.Text;
 using ToolFunction;
 using System.Data;
 using System.Configuration;
+using DataExport.外部接口;
 
 namespace DataExport
 {
@@ -92,7 +93,6 @@ namespace DataExport
         public static string CombineValues(DataRow p_drSource)
         {
             m_strValues = string.Empty;
-            //RemoteMessage.SendMessage("正在拼接[" + m_strTableName + "]的值" + m_strColumns);
             DataRow _drValue = p_drSource;
             DataTable m_dtColumns = GetTargetTable(m_strTableName);
             foreach (string dcItem in m_strColumns.Split(','))
@@ -102,18 +102,16 @@ namespace DataExport
                     string _strValue = string.Empty;
                     if (_drValue[dcItem].ToString().StartsWith("@"))
                     {
-                        string _strPatientId = _drValue["PATIENT_ID"].ToString();
-                        int _iVisitId = int.Parse(_drValue["VISIT_ID"].ToString());
-                        RemoteMessage.SendMessage("[调取模板]" + _strPatientId + "||" + _iVisitId.ToString() + "||" + _drValue[dcItem].ToString());
+                        string _strGUID = _drValue["GUID"].ToString();
+                        RemoteMessage.SendMessage("[调取接口]" + _strGUID + "||"  + _drValue[dcItem].ToString());
                         try
                         {
-                            _strValue = CallMrInfo2(_strPatientId, _iVisitId, _drValue[dcItem].ToString());
+                            _strValue = CallService( _drValue[dcItem].ToString());
 
                         }
                         catch (Exception exp)
                         {
-                            RemoteMessage.SendMessage("[获取模板信息错误]"+exp.Message);
-                            m_strValues += "无,";
+                            RemoteMessage.SendMessage("[调取接口错误]" + exp.Message);
                         }
                         RemoteMessage.SendMessage("[值]" + _strValue);
                     }
@@ -258,20 +256,14 @@ namespace DataExport
         }
 
         /// <summary>
-        /// 调用模板将当前模板元素转换为对应值
+        /// 调用外部接口对应值
         /// 2015-09-16
         /// </summary>
         /// <returns></returns>
-        public static string CallMrInfo2(string p_strPatientId, int p_iVisitId, string p_strInsertValue)
+        public static string CallService( string p_strKey)
         {
-            string _strResult = "无";
-            string _strEleName = p_strInsertValue.Remove(0, 1);
-            _strResult = ei.GetMrInfo(p_strPatientId, p_iVisitId, _strEleName);
-            if (_strResult == "")
-            {
-                _strResult = "无";
-            }
-            return _strResult.Trim();
+            UploadInterface ui = new UploadInterface();
+            return ui.CallInterface(p_strKey);
         }
 
         #region IExport 成员

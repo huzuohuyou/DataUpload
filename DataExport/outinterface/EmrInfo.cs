@@ -62,5 +62,10 @@ namespace DataExport
             //return _strResult;
         }
 
+
+        internal string GetMrInfo(string p_strKey)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
     }
 }

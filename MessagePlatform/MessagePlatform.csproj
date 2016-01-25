@@ -15,7 +15,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\DataExport\bin\Debug\</OutputPath>
+    <OutputPath>..\..\TestPost\TestPost\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,12 +50,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ToolFunction\ToolFunction.csproj">
-      <Project>{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}</Project>
-      <Name>ToolFunction</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="App.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -71,6 +65,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ToolFunction\ToolFunction.csproj">
+      <Project>{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}</Project>
+      <Name>ToolFunction</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />

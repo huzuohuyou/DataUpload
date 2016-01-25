@@ -569,8 +569,8 @@ namespace DataExport
             {
                 foreach (DataRow drpat in PublicVar.m_dsPatients.Rows)
                 {
-                    string _strSQL = string.Format(dr["sql"].ToString().Replace("@PATIENT_ID", drpat["PATIENT_ID"].ToString()).Replace("@VISIT_ID", drpat["VISIT_ID"].ToString()));
-                    RemoteMessage.SendMessage("查询病人信息" + dr["TABLE_NAME"].ToString() + "---" + drpat["PATIENT_ID"].ToString() + "---" + drpat["VISIT_ID"].ToString());
+                    string _strSQL = string.Format(dr["sql"].ToString().Replace("@GUID", drpat["GUID"].ToString()));
+                    RemoteMessage.SendMessage("查询信息" + dr["TABLE_NAME"].ToString() + "---" + drpat["GUID"].ToString() );
                     DataTable _dtOnePatOneObj = CommonFunction.OleExecuteBySQL(_strSQL, dr["TABLE_NAME"].ToString(), "EMR");
                     _dtOnePatOneObj = ConversionData.ExchangeData(_dtOnePatOneObj);
                     ExeExport(_dtOnePatOneObj);                   

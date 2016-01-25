@@ -41,22 +41,19 @@ namespace DataExport
             if ("TRUE"==_strUseAdapter)
             {
                 _strSQL = uctlBaseConfig.GetConfig("AdapterSQL");
+                if (!_strSQL.Contains("GUID"))
+                {
+                    MessageBox.Show("个性化SQL必须包含GUID!");
+                    return;
+                }
             }
             else
             {
-                string _strDBType = uctlBaseConfig.GetConfig("DBType");
-                string _strTimeKind = uctlBaseConfig.GetConfig("TimeKind");
-                if ("ORACLE" == _strDBType.ToUpper())
-                {
-                    _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID  from  pat_visit m  where  {0} >TO_DATE('{1}','yyyy-MM-dd') and {0}< TO_DATE('{2}','yyyy-MM-dd') ", _strTimeKind, dt_sta.Text, dt_end.Text);
-                }
-                else if ("SQLSERVER" == _strDBType.ToUpper())
-                {
-                    _strSQL = string.Format("select m.PATIENT_ID,m.VISIT_ID  from  pat_visit m  where  {0} >'{1}' and {0}< '{2}' ", _strTimeKind, dt_sta.Text, dt_end.Text);
-                }
+                MessageBox.Show("必须启用个性化SQL!");
+                return;
             }
             PublicVar.m_dsPatients = CommonFunction.OleExecuteBySQL(_strSQL, "", "EMR");
-            ExportDB.m_strTimeRange = "[时间]:" + dt_sta.Text + "至" + dt_end.Text;
+            //ExportDB.m_strTimeRange = "[时间]:" + dt_sta.Text + "至" + dt_end.Text;
             dataGridView1.DataSource = PublicVar.m_dsPatients;
             //RemoteMessage.SendMessage("==========================[启动文件下载线程]==========================");
             //EmrFile ef = new EmrFile(dt_sta.Text, dt_end.Text);

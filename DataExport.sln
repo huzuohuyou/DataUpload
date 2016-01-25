@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataExport", "DataExport\Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolFunction", "ToolFunction\ToolFunction.csproj", "{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagePlatform", "MessagePlatform\MessagePlatform.csproj", "{81A6178F-3F14-4E98-A5EC-23ACB51E908D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBMS_WebService", "DBMS_WebService\DBMS_WebService.csproj", "{F0E04FBF-F6AE-49D5-AB9A-BCB6446CD87F}"
 EndProject
 Global
@@ -23,10 +21,6 @@ Global
 		{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F26E3EAB-1187-4C91-A41E-2BE3D0FFE4B7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81A6178F-3F14-4E98-A5EC-23ACB51E908D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81A6178F-3F14-4E98-A5EC-23ACB51E908D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81A6178F-3F14-4E98-A5EC-23ACB51E908D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81A6178F-3F14-4E98-A5EC-23ACB51E908D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0E04FBF-F6AE-49D5-AB9A-BCB6446CD87F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0E04FBF-F6AE-49D5-AB9A-BCB6446CD87F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0E04FBF-F6AE-49D5-AB9A-BCB6446CD87F}.Release|Any CPU.ActiveCfg = Release|Any CPU

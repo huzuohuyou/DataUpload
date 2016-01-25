@@ -221,7 +221,7 @@ namespace DataExport
                 if (IsUseInterface())
                 {
                     UploadInterface ui = new UploadInterface();
-                    ui.CallInterface(_strXml, _strFiledName);
+                    ui.CallInterface(_strXml);
                 }
                 else
                 {

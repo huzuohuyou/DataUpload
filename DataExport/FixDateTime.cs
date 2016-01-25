@@ -13,9 +13,9 @@ namespace DataExport
             string strReturn = "";
            
                 if (bDate)
-                    strReturn = "TO_DATE(" + strDate + ",'YYYY-MM-DD')";
+                    strReturn = "TO_DATE('" + strDate + "','YYYY-MM-DD')";
                 else
-                    strReturn = "TO_DATE(" + strDate + ",'YYYY-MM-DD HH24:MI:SS')";
+                    strReturn = "TO_DATE('" + strDate + "','YYYY-MM-DD HH24:MI:SS')";
             return strReturn;
         }
 
@@ -33,7 +33,6 @@ namespace DataExport
             {
                 case "ORACLE":
                     {
-
                         result = ToOracleDate(strDate, bDate);
                     }
                     break;
